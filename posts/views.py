@@ -123,7 +123,7 @@ class CreatePostView(CreateView):
     model = Post
 
     def get_success_url(self):
-        return reverse('detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
+        return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
