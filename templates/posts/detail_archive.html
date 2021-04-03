@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+        <!--================Home Banner Area =================-->
+        <section class="banner_area">
+            <div class="banner_inner d-flex align-items-center">
+            	<div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
+				<div class="container">
+					<div class="banner_content text-center">
+						<h2>Blog Post Details</h2>
+						<div class="page_link">
+							<a href="{% url 'posts:index' %}">Home</a>
+							<a href="#">Post Details</a>
+						</div>
+					</div>
+				</div>
+            </div>
+        </section>
+        <!--================End Home Banner Area =================-->
+
+        <!--================Blog Area =================-->
+        <section class="blog_area p_120 single-post-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+       					<div class="main_blog_details">
+       						<img class="img-fluid" src="{{ single.image.url }}" alt="">
+       						<a href="#"><h4>{{ single.title }}</h4></a>
+       						<div class="user_details">
+       							<div class="float-left">
+                                    {% for tag in single.tag.all %}
+       								<a href="{% url 'posts:tag_detail' tag.slug %}">{{ tag.title }}</a>
+                                    {% endfor %}
+       							</div>
+       							<div class="float-right">
+       								<div class="media">
+       									<div class="media-body">
+                                            <h5><a href="{% url 'users:user_posts' single.user.pk %}">{{ single.user.username }}</a></h5>
+       										<p>{{ single.publishing_date }}</p>
+       									</div>
+       									<div class="d-flex">
+       										<img src="{% static 'img/blog/user-img.jpg' %}" alt="">
+
+       									</div>
+       								</div>
+       							</div>
+       						</div>
+
+							<p> {{ single.content }}</p>
+                            {% if single.user == request.user %}
+                            <a href="{% url 'posts:post_update' single.pk single.slug %}" class="genric-btn info circle">Update</a>
+                            <a href="{% url 'posts:post_delete' single.pk single.slug %}" class="genric-btn danger circle">Delete</a>
+      						{% endif %}
+                            <div class="news_d_footer">
+      							<a href="#"><i class="lnr lnr lnr-heart"></i>Lily and 4 people like this</a>
+      							<a class="justify-content-center ml-auto" href="#"><i class="lnr lnr lnr-bubble"></i>06 Comments</a>
+      							<div class="news_socail ml-auto">
+									<a href="#"><i class="fa fa-facebook"></i></a>
+									<a href="#"><i class="fa fa-twitter"></i></a>
+									<a href="#"><i class="fa fa-youtube-play"></i></a>
+									<a href="#"><i class="fa fa-pinterest"></i></a>
+									<a href="#"><i class="fa fa-rss"></i></a>
+								</div>
+      						</div>
+       					</div>
+       					<div class="navigation-area">
+                            <div class="row">
+                                {% if previous %}
+                                <div class="col-lg-6 col-md-6 col-12 nav-left flex-row d-flex justify-content-start align-items-center">
+                                    <div class="thumb">
+                                        <a href="{% url 'posts:detail_archive' previous.pk previous.slug %}"><img class="img-fluid" src="{{ previous.image.url }}" alt="" style="width:60px;height:60px"></a>
+                                    </div>
+                                    <div class="arrow">
+                                        <a href="{% url 'posts:detail_archive' previous.pk previous.slug %}"><span class="lnr text-white lnr-arrow-left"></span></a>
+                                    </div>
+                                    <div class="detials">
+                                        <p>Prev Post</p>
+                                        <a href="{% url 'posts:detail_archive' previous.pk previous.slug %}"><h4>{{ previous.title }}</h4></a>
+                                    </div>
+                                </div>
+
+                                {% else %}
+                                <div class="col-lg-6 col-md-6 col-12 nav-left flex-row d-flex justify-content-start align-items-center">
+                                    <div class="thumb">
+                                        <a href="#"><img class="img-fluid" src="{% static 'img/blog/prev.jpg' %}" alt=""></a>
+                                    </div>
+                                    <div class="arrow">
+                                        <a href="#"><span class="lnr text-white lnr-arrow-left"></span></a>
+                                    </div>
+                                    <div class="detials">
+                                        <p>No Prev Post</p>
+                                        <a href="#"><h4>No Prev Post</h4></a>
+                                    </div>
+                                </div>
+
+                                {% endif %}
+                                {% if next %}
+                                <div class="col-lg-6 col-md-6 col-12 nav-right flex-row d-flex justify-content-end align-items-center">
+                                    <div class="detials">
+                                        <p>Next Post</p>
+                                        <a href="{% url 'posts:detail_archive' next.pk next.slug %}"><h4>{{ next.title }}</h4></a>
+                                    </div>
+                                    <div class="arrow">
+                                        <a href="{% url 'posts:detail_archive' next.pk next.slug %}"><span class="lnr text-white lnr-arrow-right"></span></a>
+                                    </div>
+                                    <div class="thumb">
+                                        <a href="{% url 'posts:detail_archive' next.pk next.slug %}"><img class="img-fluid" src="{{ next.image.url }}" alt="" style="width:60px;height:60px"></a>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="col-lg-6 col-md-6 col-12 nav-right flex-row d-flex justify-content-end align-items-center">
+                                    <div class="details">
+                                        <p>No Next Post</p>
+                                        <a href="#"><h4>No Next Post</h4></a>
+                                    </div>
+                                    <div class="arrow">
+                                        <a href="#"><span class="lnr text-white lnr-arrow-right"></span></a>
+                                    </div>
+                                    <div class="thumb">
+                                        <a href="#"><img class="img-fluid" src="{% static 'img/blog/next.jpg' %}" alt=""></a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="comments-area">
+                            <h4>{{ single.comment_count }} Comments</h4>
+                            {% for comment in single.comments.all %}
+                            <div class="comment-list">
+                                <div class="single-comment justify-content-between d-flex">
+                                    <div class="user justify-content-between d-flex">
+                                        <div class="thumb">
+                                            <img src="{% static 'img/blog/c1.jpg' %}" alt="">
+                                        </div>
+                                        <div class="desc">
+                                            <h5><a href="#">{{ comment.name }}</a></h5>
+                                            <p class="date">{{ comment.publishing_date }} </p>
+                                            <p class="comment">
+                                                {{ comment.content }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                        <div class="comment-form">
+                            <h4>Leave a Reply</h4>
+                            {% if form.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <div id="form_errors">
+                                    {% for key,value in form.errors.items %}
+                                    <span class="fieldWrapper">
+                                        {{ key }} : {{ value }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+
+                            </div>
+                            {% endif %}
+                            {% crispy form %}
+                        </div>
+        			</div>
+                    {% include 'right_side.html' %}
+                </div>
+            </div>
+        </section>
+        <!--================Blog Area =================-->
+
+       {% endblock %}

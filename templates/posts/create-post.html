@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+        <!--================Home Banner Area =================-->
+        <section class="banner_area">
+            <div class="banner_inner d-flex align-items-center">
+            	<div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
+				<div class="container">
+					<div class="banner_content text-center">
+						<h2>Login</h2>
+						<div class="page_link">
+							<a href="{% url 'posts:index' %}">Home</a>
+
+						</div>
+					</div>
+				</div>
+            </div>
+        </section>
+        <!--================End Home Banner Area =================-->
+
+        <!--================Blog Area =================-->
+        <section class="blog_area p_120">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+
+                        <h2 style="text-align:center;color:blue">Create Post</h2>
+                        <div class="blog_left_sidebar">
+                            <form method="post" enctype="multipart/form-data">
+
+                                {% csrf_token %}
+                                {% if form.errors %}
+                                <div id="errors">
+                                    <div class="inner">
+                                        <p style="color:red">Please correct the errors below</p>
+                                        <ul>
+                                            {% for field in form %}
+                                            {% if field.errors %}
+                                            <li>{{ form.label }} : {{ field.errors|striptags }}</li>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% for field in form %}
+                                <div class="mt-10">
+                                    {{ field }}
+									</div>
+                                {% endfor %}
+
+                                <div class="mt-10">
+										<input type="text" name="tag" placeholder="Tag" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tag'" required="" class="single-input">
+									</div>
+
+                                <input type="submit" class="genric-btn success circle" style="float:right;margin-top:30px" value="Add Post">
+                            </form>
+
+                        </div>
+
+
+                    </div>
+                    {% include 'right_side.html' %}
+
+                </div>
+            </div>
+        </section>
+        <!--================Blog Area =================-->
+
+       {% endblock %}

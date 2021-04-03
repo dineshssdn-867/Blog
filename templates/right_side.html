@@ -1,0 +1,72 @@
+{% load static %}
+{% load custom_tags %}
+
+<div class="col-lg-4">
+                        <div class="blog_right_sidebar">
+                            <aside class="single_sidebar_widget search_widget">
+                                <form action="{% url 'posts:search' %}" method="get">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search Posts" name="q">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i class="lnr lnr-magnifier"></i></button>
+                                    </span>
+                                </div></form>
+                                    <!-- /input-group -->
+                                <div class="br"></div>
+                            </aside>
+                            <aside class="single_sidebar_widget author_widget">
+                                <img class="author_img rounded-circle" width="220" height="320" src="{% static 'img/WhatsApp Image 2021-04-02 at 3.04.59 PM.jpeg' %}" alt="">
+                                <h4>Dinesh Nariani</h4>
+                                <p>Founder of Fantom Blog</p>
+                                <div class="social_icon">
+                                    <a href="https://twitter.com/DineshNariani"><i class="fa fa-twitter"></i></a>
+                                    <a href="https://github.com/dineshssdn-867"><i class="fa fa-github"></i></a>
+                                </div>
+                                <p>The Pessimist Sees Difficulty In Every Opportunity. The Optimist Sees Opportunity In Every Difficulty</p>
+                                <div class="br"></div>
+                            </aside>
+                            <aside class="single_sidebar_widget popular_post_widget">
+                                <h3 class="widget_title">Popular Posts</h3>
+                                {% hit_posts as posts %}
+                                {% for post in posts %}
+                                <div class="media post_item">
+                                    <img src="{{ post.image.url }}" alt="post" style="width:100px;height:60px">
+                                    <div class="media-body">
+                                        <a href="{% url 'posts:detail' post.pk post.slug %}"><h3>{{ post.title }}</h3></a>
+                                        <p>Hit : {{ post.hit }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="br"></div>
+                            </aside>
+                            <aside class="single_sidebar_widget">
+                                <a href="#"><img class="img-fluid" src="{% static 'img/blog/add.jpg' %}" alt=""></a>
+                                <div class="br"></div>
+                            </aside>
+                            <aside class="single_sidebar_widget post_category_widget">
+                                <h4 class="widget_title">Post Categories</h4>
+                                <ul class="list cat-list">
+                                    {% categories as categories %}
+                                    {% for category in categories %}
+                                    <li>
+                                        <a href="{% url 'posts:category_detail' pk=category.id slug=category.slug %}" class="d-flex justify-content-between">
+                                            <p>{{ category.title }}</p>
+                                            <p>{{ category.post_count }}</p>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+
+                                </ul>
+                                <div class="br"></div>
+                            </aside>
+                            <aside class="single-sidebar-widget tag_cloud_widget">
+                                <h4 class="widget_title">Tag Clouds</h4>
+                                <ul class="list">
+                                    {% tags as labels %}
+                                    {% for label in labels %}
+                                    <li><a href="{% url 'posts:tag_detail' label.slug %}">{{ label }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </aside>
+                        </div>
+                    </div>
