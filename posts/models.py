@@ -1,14 +1,14 @@
-from PIL import Image
 from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext_lazy as _
 
 
 # Create your models here.
 
 class Category(models.Model):
-    title = models.CharField(max_length=150)
-    slug = models.SlugField(editable=False)
+    title = models.CharField(_('title'),max_length=150)
+    slug = models.SlugField(_('slug'),editable=False)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -22,8 +22,8 @@ class Category(models.Model):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=50)
-    slug = models.SlugField(editable=False)
+    title = models.CharField(_('title'),max_length=50)
+    slug = models.SlugField(_('slug'),editable=False)
 
     def __str__(self):
         return self.title
@@ -37,16 +37,16 @@ class Tag(models.Model):
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=150)
-    content = models.TextField()
-    publishing_date = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(blank=True, null=True, upload_to='uploads/')
+    title = models.CharField(_('title'), max_length=150)
+    content = models.TextField(_('content'))
+    publishing_date = models.DateTimeField(_('publishing_date'), auto_now_add=True)
+    image = models.ImageField(_('image'), blank=True, null=True, upload_to='uploads/')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    slug = models.SlugField(default="slug", editable=False)
+    slug = models.SlugField(_('slug'), default="slug", editable=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1, related_name="posts")
     tag = models.ManyToManyField(Tag, related_name="posts", blank=True)
-    slider_post = models.BooleanField(default=False)
-    hit = models.PositiveIntegerField(default=0)
+    slider_post = models.BooleanField(_('slider_post'), default=False)
+    hit = models.PositiveIntegerField(_('hit'), default=0)
 
     def comment_count(self):
         return self.comments.all().count()
@@ -64,10 +64,10 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    content = models.TextField()
-    publishing_date = models.DateField(auto_now_add=True)
+    name = models.CharField(_('name'),max_length=100)
+    email = models.EmailField(_('email'),max_length=100)
+    content = models.TextField(_('content'))
+    publishing_date = models.DateField(_('publishing_date'),auto_now_add=True)
 
     def __str__(self):
         return self.post.title
