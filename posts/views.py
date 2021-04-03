@@ -79,7 +79,7 @@ class PostDetail(DetailView, FormMixin):
             return self.form_valid(form)
 
     def get_success_url(self):
-        return reverse('detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
+        return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
 
 class CategoryDetail(ListView):
@@ -149,7 +149,7 @@ class UpdatePostView(UpdateView):
     form_class = PostUpdateForm
 
     def get_success_url(self):
-        return reverse('detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
+        return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -209,7 +209,6 @@ class SearchView(ListView):
             return Post.objects.filter(Q(title__icontains=query) |
                                        Q(content__icontains=query) |
                                        Q(tag__title__icontains=query)
-
                                        ).order_by('id').distinct()
 
         return Post.objects.all().order_by('id')
