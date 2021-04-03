@@ -17,6 +17,6 @@ class ArchiveView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ArchiveView, self).get_context_data(**kwargs)
         context['archives'] = Archive.objects.filter(main_user=self.request.user)
-        context['posts']=Post.objects.all()
+        context['posts'] = Post.objects.all()
         context['slider_posts'] = Post.objects.all().filter(slider_post=True)
         return context

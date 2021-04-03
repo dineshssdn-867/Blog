@@ -15,4 +15,4 @@ class Archive(models.Model):
     tag = models.ManyToManyField(Tag, related_name="archives", blank=True)
     slider_post = models.BooleanField(default=False)
     hit = models.PositiveIntegerField(default=0)
-    main_user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE ,default=None)
+    main_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,default=None)

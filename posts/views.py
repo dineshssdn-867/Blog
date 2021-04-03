@@ -33,7 +33,7 @@ class MyView(ListView):
     paginate_by = 3
 
     def get_queryset(self):
-        self.category= UserProfile.objects.filter(user=self.request.user).values('category_like')
+        self.category = UserProfile.objects.filter(user=self.request.user).values('category_like')
         return super().get_queryset()
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -174,6 +174,7 @@ class UpdatePostView(UpdateView):
             return HttpResponseRedirect('/')
         return super(UpdatePostView, self).get(request, *args, **kwargs)
 
+
 @method_decorator(login_required(login_url='users/login'), name="dispatch")
 class DeletePostView(DeleteView):
     model = Post
@@ -223,6 +224,7 @@ def CreateArchiveView(request, *args, **kwargs):
     copyEmailDetail.main_user = User.objects.get(id=request.user.id)
     copyEmailDetail.save()
     return redirect('/')
+
 
 @method_decorator(login_required(login_url='users/login'), name="dispatch")
 class PostDetailArchive(DetailView, FormMixin):

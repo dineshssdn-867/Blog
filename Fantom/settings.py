@@ -16,7 +16,6 @@ import django_heroku
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -27,7 +26,6 @@ SECRET_KEY = 'hd$3k3%9m#7^4j!ng@!sudq-kx0l$#yp1g!81p*hz97dl02^=q'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -65,7 +63,7 @@ ROOT_URLCONF = 'Fantom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Fantom.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -90,7 +87,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -110,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -124,22 +119,20 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'static')
+    os.path.join(BASE_DIR, 'static')
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,"media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-LOGOUT_REDIRECT_URL ='/'
-LOGIN_REDIRECT_URL ='/myview'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/myview'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
 
 RECAPTCHA_PUBLIC_KEY = '6LdbxPsUAAAAAJhoNMgMT8UjrQJv4FPcDuMW8f53'
 RECAPTCHA_PRIVATE_KEY = '6LdbxPsUAAAAAOH80fY1ZDsqDNZ6n3YPJXZwBzHW'
@@ -164,12 +157,19 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_THEME_COLOR = '#0A0302'
 PWA_APP_ICONS = [
-    {'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png', 'sizes': '160x160', 'purpose': 'any maskable', 'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png', 'sizes': '512x512', 'purpose': 'any maskable'}
+    {
+        'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png',
+        'sizes': '160x160', 'purpose': 'any maskable',
+        'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png',
+        'sizes': '512x512', 'purpose': 'any maskable'}
 ]
 PWA_APP_ICONS_APPLE = [
-    {'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png', 'sizes': '160x160'}
+    {
+        'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png',
+        'sizes': '160x160'}
 ]
-PWA_APP_SPLASH_SCREEN = [ { 'src': '/static/images/571658cd2ec465a08e2dc2cf30258023.png', 'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)' } ]
+PWA_APP_SPLASH_SCREEN = [{'src': '/static/images/571658cd2ec465a08e2dc2cf30258023.png',
+                          'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'}]
 PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
 PWA_APP_DEBUG_MODE = True
