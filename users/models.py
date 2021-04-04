@@ -11,7 +11,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     birth_day = models.DateField(_('birth_day'), null=True, blank=True)
     bio = models.TextField(_('bio'), max_length=1000, blank=True)
-    image = models.ImageField(_('image'), blank=True, null=True, default='person-icon-blue-7560.png', upload_to='users')
+    image = models.ImageField(_('image'), blank=True, null=True, default='person-icon-blue-7560.png', upload_to='users/')
     slug = models.SlugField(_('slug'), editable=False)
     category_like = models.ManyToManyField(Category, default="food")
 
