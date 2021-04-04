@@ -55,8 +55,7 @@
                             <a href="{% url 'posts:post_delete' single.pk single.slug %}" class="genric-btn danger circle">Delete</a>
       						{% endif %}
                             <div class="news_d_footer">
-      							<a href="#"><i class="lnr lnr lnr-heart"></i>Lily and 4 people like this</a>
-      							<a class="justify-content-center ml-auto" href="#"><i class="lnr lnr lnr-bubble"></i>06 Comments</a>
+      							<a class="justify-content-center ml-auto" href="#"><i class="lnr lnr lnr-bubble"></i>{{ single.comment_count }}</a>
       							<div class="news_socail ml-auto">
 									<a href="#"><i class="fa fa-facebook"></i></a>
 									<a href="#"><i class="fa fa-twitter"></i></a>
