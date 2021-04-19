@@ -56,7 +56,14 @@
                             <a href="{% url 'posts:post_delete' single.pk single.slug %}" class="genric-btn danger circle">Delete</a>
       						{% endif %}
                             <div class="news_d_footer">
-      							<a href="#"><i class="lnr lnr lnr-heart"></i>Lily and 4 people like this</a>
+                                <form action="{% url 'posts:like_post' single.pk %}" method="post">
+                                    {% csrf_token %}
+                                    {% if liked %}
+      							    <button type="submit" value="{{ post.id }}" name="post_id" class="btn btn-danger"><i class="lnr lnr lnr-heart"></i></a></button> {{total_likes}}
+                                    {% else %}
+                                    <button type="submit" value="{{ post.id }}" name="post_id" class="btn btn-secondary"><i class="lnr lnr lnr-heart"></i></a></button> {{total_likes}}
+                                    {% endif %}
+                                 </form>
       							<a class="justify-content-center ml-auto" href="#"><i class="lnr lnr lnr-bubble"></i>{{ single.comment_count }} Comments</a>
       							<div class="news_socail ml-auto">
 									<a href="#"><i class="fa fa-facebook"></i></a>
@@ -68,7 +75,10 @@
       						</div>
                             <br>
                             <div class="">
+                                {% if request.user.id %}
+                                {% else %}
                                 <a href="{% url 'posts:add-archive' single.pk %}" class="genric-btn info circle">Add to Archive</a>
+                                {% endif %}
                             </div>
        					</div>
        					<div class="navigation-area">

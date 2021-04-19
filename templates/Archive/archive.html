@@ -6,11 +6,13 @@
         <!--================Post Slider Area =================-->
         <section class="post_slider_area">
 			<div class="post_slider_inner owl-carousel">
-				{% for post in posts %}
+				{% for post in slider_posts %}
 				<div class="item">
 					<div class="post_s_item">
 						<div class="post_img">
-							<img src="{{ post.image.url }}" height="640" alt="">
+							{% if post.image %}
+							<img src="{{ post.image.url }}" height="500" class="img-fluid" alt="">
+							{% endif %}
 						</div>
 						<div class="post_text">
 							{% for tag in post.tag.all %}
@@ -38,7 +40,9 @@
 							{% for post in archives %}
                             <article class="blog_style1">
                             	<div class="blog_img">
-                            		<img class="img-fluid" src="{{ post.image.url }}" alt="" style="width:100%">
+                            		{% if post.image %}
+									<img src="{{ post.image.url }}" height="640" class="img-fluid" alt="">
+									{% endif %}
                             	</div>
                             	<div class="blog_text">
 									<div class="blog_text_inner">

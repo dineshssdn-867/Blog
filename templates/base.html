@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{% static 'vendors/linericon/style.css' %}">
         <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
         <link rel="stylesheet" href="{% static 'vendors/owl-carousel/owl.carousel.min.css' %}">
-        <link rel="stylesheet" href="{% static 'vendors/lightbox/simpleLightbox.css' %}'">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.7.0/simple-lightbox.min.css">
         <link rel="stylesheet" href="{% static 'vendors/nice-select/css/nice-select.css' %}">
         <link rel="stylesheet" href="{% static 'vendors/animate-css/animate.css' %}">
         <link rel="stylesheet" href="{% static 'vendors/jquery-ui/jquery-ui.css' %}">
@@ -29,14 +29,14 @@
             {% include 'messages.html' %}
             <div class="logo_part">
             	<div class="container">
-            		<a class="logo" href="{% url 'posts:index' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
+            		<a class="logo" href="{% url 'posts:index' %}"><img src="{% static 'img/ds.png' %}" alt=""></a>
             	</div>
             </div>
 			<div class="main_menu">
 				<nav class="navbar navbar-expand-lg navbar-light">
 					<div class="container">
 						<!-- Brand and toggle get grouped for better mobile display -->
-						<a class="navbar-brand logo_h" href="{% url 'posts:index' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
+						<a class="navbar-brand logo_h" href="{% url 'posts:index' %}"><img src="{% static 'img/ds.png' %}" alt=""></a>
 						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
@@ -77,8 +77,19 @@
 								<li class="nav-item"><a class="nav-link" href="{% url 'users:login' %}">Login</a></li>
                                 {% endif %}
                                 <li class="nav-item"><a class="nav-link" href="{% url 'contact:contact' %}">Contact</a></li>
-
-							</ul>
+                                <li class="nav-item ml-3" ><aside class="single_sidebar_widget search_widget" id="search_menu">
+                                <form action="{% url 'posts:search' %}" method="get">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search Posts" name="q">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i class="lnr lnr-magnifier"></i></button>
+                                    </span>
+                                </div>
+                                </form>
+                                    <!-- /input-group -->
+                                <div class="br"></div>
+                            </aside></li>
+                            </ul>
 						</div>
 					</div>
 				</nav>
@@ -101,7 +112,7 @@
                     <div class="col-lg-3  col-md-6 col-sm-6">
                         <div class="single-footer-widget">
                             <h6 class="footer_title">About Us</h6>
-                            <p>Blogging is a great way to show your talents and interests to prospective employers, while adding an edge to your resume. If you blog consistently it shows your dedication, passions and creativity – all of which are key attributes employers look for in job candidates</p>
+                            <p>D's blog gives you the opportunity to share your expertise or whatever’s on your mind, you’re in good company. Sign up to discover why people have published their passions here.</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-sm-6">
@@ -167,5 +178,13 @@
         <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
         <script src="{% static 'js/mail-script.js' %}"></script>
         <script src="{% static 'js/theme.js' %}"></script>
+        <script type="text/javascript">
+	    $(document).ready(function(){
+	    console.log("Hello world")
+	    console.log($(window).width())
+	        if ($(window).width() >= 480) {
+             $('#search_menu').css("display", "none");
+        }});
+        </script>
     </body>
 </html>

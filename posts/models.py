@@ -7,8 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 # Create your models here.
 
 class Category(models.Model):
-    title = models.CharField(_('title'),max_length=150)
-    slug = models.SlugField(_('slug'),editable=False)
+    title = models.CharField(_('title'), max_length=150)
+    slug = models.SlugField(_('slug'), editable=False)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -22,8 +22,8 @@ class Category(models.Model):
 
 
 class Tag(models.Model):
-    title = models.CharField(_('title'),max_length=50)
-    slug = models.SlugField(_('slug'),editable=False)
+    title = models.CharField(_('title'), max_length=50)
+    slug = models.SlugField(_('slug'), editable=False)
 
     def __str__(self):
         return self.title
@@ -45,8 +45,15 @@ class Post(models.Model):
     slug = models.SlugField(_('slug'), default="slug", editable=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1, related_name="posts")
     tag = models.ManyToManyField(Tag, related_name="posts", blank=True)
-    slider_post = models.BooleanField(_('slider_post'), default=False)
+    slider_post = models.BooleanField(_('slider_post'), blank=True, null=True)
     hit = models.PositiveIntegerField(_('hit'), default=0)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='blog_post')
+
+    def total_likes(self):
+        return self.likes.all().count()
+
+    class Meta:
+        ordering = ["id"]
 
     def comment_count(self):
         return self.comments.all().count()
@@ -64,10 +71,10 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    name = models.CharField(_('name'),max_length=100)
-    email = models.EmailField(_('email'),max_length=100)
+    name = models.CharField(_('name'), max_length=100)
+    email = models.EmailField(_('email'), max_length=100)
     content = models.TextField(_('content'))
-    publishing_date = models.DateField(_('publishing_date'),auto_now_add=True)
+    publishing_date = models.DateField(_('publishing_date'), auto_now_add=True)
 
     def __str__(self):
         return self.post.title

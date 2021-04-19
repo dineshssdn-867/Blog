@@ -41,7 +41,8 @@
 										<p> {{ post.content |truncatechars:150}}</p>
 										<div class="date">
 											<a href="#"><i class="fa fa-calendar" aria-hidden="true"></i> {{ post.publishing_date }}</a>
-											<a href="#"><i class="fa fa-comments-o" aria-hidden="true"></i> 05</a>
+											<a href="#"><i class="fa fa-heart" aria-hidden="true"></i> {{ post.total_likes}}</a>
+											<a href="#"><i class="fa fa-comments-o" aria-hidden="true"></i> {{ post.comment_count }}</a>
 										</div>
 									</div>
                             	</div>

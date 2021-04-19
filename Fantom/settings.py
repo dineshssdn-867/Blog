@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import django_heroku
+import cloudinary
+import cloudinary_storage
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +27,7 @@ SECRET_KEY = 'hd$3k3%9m#7^4j!ng@!sudq-kx0l$#yp1g!81p*hz97dl02^=q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://fantom-blog.herokuapp.com/', '127.0.0.1']
+ALLOWED_HOSTS = ['https://d-fantom-blog.herokuapp.com/', '127.0.0.1']
 
 # Application definition
 
@@ -43,10 +45,13 @@ INSTALLED_APPS = [
     'pwa',
     'contact',
     'myarchive',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -178,5 +183,17 @@ PWA_APP_DEBUG_MODE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dineshscloud',
+    'API_KEY': '858455229732434',
+    'API_SECRET': 'VTDlyF-OhpkS9hOvqxxBCMqGT3A',
+}
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 django_heroku.settings(locals())

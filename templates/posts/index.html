@@ -10,7 +10,7 @@
 				<div class="item">
 					<div class="post_s_item">
 						<div class="post_img">
-							<img src="{{ post.image.url }}" width="320" height="640" alt="">
+							<img src="{{ post.image.url }}"  height="500" class="img-responsive"  alt="{{ post.title }}">
 						</div>
 						<div class="post_text">
 							{% for tag in post.tag.all %}
@@ -20,6 +20,7 @@
 							<p>{{ post.content | truncatechars:150 }}</p>
 							<div class="date">
 								<a href="#"><i class="fa fa-calendar" aria-hidden="true"></i> {{ post.publishing_date}}</a>
+								<a href="#"><i class="fa fa-heart" aria-hidden="true"></i> {{ post.total_likes}}</a>
 								<a href="#"><i class="fa fa-comments-o" aria-hidden="true"></i> {{ post.comment_count }}</a>
 							</div>
 						</div>
@@ -39,7 +40,7 @@
 							{% for post in posts %}
                             <article class="blog_style1">
                             	<div class="blog_img">
-                            		<img class="img-fluid" src="{{ post.image.url }}" alt="" style="width:100%">
+                            		<img class="img-fluid" src="{{ post.image.url }}" alt="{{post.title	}}" style="width:100%">
                             	</div>
                             	<div class="blog_text">
 									<div class="blog_text_inner">
@@ -50,6 +51,7 @@
 										<p>{{ post.content|truncatechars:175 }}</p>
 										<div class="date">
 											<a href="#"><i class="fa fa-calendar" aria-hidden="true"></i> {{ post.publishing_date }}</a>
+											<a href="#"><i class="fa fa-heart" aria-hidden="true"></i> {{ post.total_likes}}</a>
 											<a href="#"><i class="fa fa-comments-o" aria-hidden="true"></i> {{ post.comment_count }}</a>
 										</div>
 									</div>

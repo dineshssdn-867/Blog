@@ -22,7 +22,7 @@ class IndexView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['slider_posts'] = Post.objects.all().filter(slider_post=True).order_by('-pk')
+        context['slider_posts'] = Post.objects.all().filter(slider_post=True).order_by('id')
         return context
 
 
@@ -59,7 +59,13 @@ class PostDetail(DetailView, FormMixin):
         context = super(PostDetail, self).get_context_data(**kwargs)
         context['previous'] = Post.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
         context['next'] = Post.objects.filter(id__gt=self.kwargs['pk']).order_by('pk').first()
+        stuff = get_object_or_404(Post, id=self.kwargs['pk'])
+        context['total_likes'] = stuff.total_likes()
+        liked = False
+        if stuff.likes.filter(id=self.request.user.id).exists():
+            liked = True
         context['form'] = self.get_form()
+        context['liked']= liked
         return context
 
     def form_valid(self, form):
@@ -123,6 +129,12 @@ class CreatePostView(CreateView):
     model = Post
 
     def get_success_url(self):
+        print(self.object.pk)
+        post = get_object_or_404(Post, id=self.object.pk)
+        print(str(post.image.height) + " " + str(post.image.width))
+        if post.image.width <= 450 and post.image.height <= 540:
+            post.slider_post = True
+        post.save()
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
     def form_valid(self, form):
@@ -260,4 +272,16 @@ class PostDetailArchive(DetailView, FormMixin):
             return self.form_valid(form)
 
     def get_success_url(self):
-        return reverse('detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
+        return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
+
+
+@login_required()
+def post_like(request, pk):
+    print(pk)
+    post = get_object_or_404(Post, id=pk)
+    slug = post.slug
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+    return HttpResponseRedirect(reverse('posts:detail', kwargs={"pk": pk, "slug": slug}))
