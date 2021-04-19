@@ -15,17 +15,6 @@
                                     <!-- /input-group -->
                                 <div class="br"></div>
                             </aside>
-                            <aside class="single_sidebar_widget author_widget">
-                                <img class="author_img rounded-circle" width="220" height="320" src="{% static 'img/WhatsApp Image 2021-04-02 at 3.04.59 PM.jpeg' %}" alt="">
-                                <h4>Dinesh Nariani</h4>
-                                <p>Founder of D's Blog</p>
-                                <div class="social_icon">
-                                    <a href="https://twitter.com/DineshNariani"><i class="fa fa-twitter"></i></a>
-                                    <a href="https://github.com/dineshssdn-867"><i class="fa fa-github"></i></a>
-                                </div>
-                                <p>The Pessimist Sees Difficulty In Every Opportunity. The Optimist Sees Opportunity In Every Difficulty</p>
-                                <div class="br"></div>
-                            </aside>
                             <aside class="single_sidebar_widget popular_post_widget">
                                 <h3 class="widget_title">Popular Posts</h3>
                                 {% hit_posts as posts %}
@@ -68,6 +57,19 @@
                                     <li><a href="{% url 'posts:tag_detail' label.slug %}">{{ label }}</a></li>
                                     {% endfor %}
                                 </ul>
+                                                                    <!-- /input-group -->
+                                <div class="br"></div>
+                            </aside>
+                            <aside class="single_sidebar_widget author_widget">
+                                <img class="author_img rounded-circle" width="220" height="320" src="{% static 'img/WhatsApp Image 2021-04-02 at 3.04.59 PM.jpeg' %}" alt="">
+                                <h4>Dinesh Nariani</h4>
+                                <p>Founder of D's Blog</p>
+                                <div class="social_icon">
+                                    <a href="https://twitter.com/DineshNariani"><i class="fa fa-twitter"></i></a>
+                                    <a href="https://github.com/dineshssdn-867"><i class="fa fa-github"></i></a>
+                                </div>
+                                <p>The Pessimist Sees Difficulty In Every Opportunity. The Optimist Sees Opportunity In Every Difficulty</p>
+                                <div class="br"></div>
                             </aside>
                         </div>
                     </div>
