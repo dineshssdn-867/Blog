@@ -1,8 +1,9 @@
+from functools import lru_cache
+
 from django.contrib.auth.decorators import login_required
-from django.http import request, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
+
 from myarchive.models import Archive
 from posts.models import Post
 
@@ -14,6 +15,7 @@ class ArchiveView(ListView):
     context_object_name = 'archives'
     paginate_by = 3
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ArchiveView, self).get_context_data(**kwargs)
         context['archives'] = Archive.objects.filter(main_user=self.request.user)

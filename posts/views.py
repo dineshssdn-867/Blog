@@ -12,6 +12,7 @@ from myarchive.models import Archive
 from users.models import UserProfile
 from .forms import PostCreationForm, PostUpdateForm, CreateCommentForm
 from .models import Post, Category, Tag
+from functools import lru_cache
 
 
 class IndexView(ListView):
@@ -20,6 +21,7 @@ class IndexView(ListView):
     context_object_name = 'posts'
     paginate_by = 3
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['slider_posts'] = Post.objects.all().filter(slider_post=True).order_by('id')
@@ -32,10 +34,12 @@ class MyView(ListView):
     model = Post
     paginate_by = 3
 
+    @lru_cache(maxsize=None)
     def get_queryset(self):
         self.category = UserProfile.objects.filter(user=self.request.user).values('category_like')
         return super().get_queryset()
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(MyView, self).get_context_data(**kwargs)
         for category in self.category:
@@ -51,10 +55,12 @@ class PostDetail(DetailView, FormMixin):
     context_object_name = 'single'
     form_class = CreateCommentForm
 
+    @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
         self.hit = Post.objects.filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
         return super(PostDetail, self).get(request, *args, **kwargs)
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(PostDetail, self).get_context_data(**kwargs)
         context['previous'] = Post.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
@@ -94,10 +100,12 @@ class CategoryDetail(ListView):
     context_object_name = 'posts'
     paginate_by = 3
 
+    @lru_cache(maxsize=None)
     def get_queryset(self):
         self.category = get_object_or_404(Category, pk=self.kwargs['pk'])
         return Post.objects.filter(category=self.category).order_by('-id')
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(CategoryDetail, self).get_context_data(**kwargs)
         self.category = get_object_or_404(Category, pk=self.kwargs['pk'])
@@ -111,10 +119,12 @@ class TagDetail(ListView):
     context_object_name = 'posts'
     paginate_by = 3
 
+    @lru_cache(maxsize=None)
     def get_queryset(self):
         self.tag = get_object_or_404(Tag, slug=self.kwargs['slug'])
         return Post.objects.filter(tag=self.tag).order_by('id')
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(TagDetail, self).get_context_data(**kwargs)
         self.tag = get_object_or_404(Tag, slug=self.kwargs['slug'])
@@ -129,9 +139,7 @@ class CreatePostView(CreateView):
     model = Post
 
     def get_success_url(self):
-        print(self.object.pk)
         post = get_object_or_404(Post, id=self.object.pk)
-        print(str(post.image.height) + " " + str(post.image.width))
         if post.image.width <= 450 and post.image.height <= 540:
             post.slider_post = True
         post.save()
@@ -179,6 +187,7 @@ class UpdatePostView(UpdateView):
                 form.instance.tag.add(existed_tag)
         return super(UpdatePostView, self).form_valid(form)
 
+    @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
@@ -201,6 +210,7 @@ class DeletePostView(DeleteView):
         else:
             return HttpResponseRedirect(self.success_url)
 
+    @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.user != request.user:
@@ -214,6 +224,7 @@ class SearchView(ListView):
     paginate_by = 5
     context_object_name = 'posts'
 
+    @lru_cache(maxsize=None)
     def get_queryset(self):
         query = self.request.GET.get("q")
 
@@ -244,10 +255,12 @@ class PostDetailArchive(DetailView, FormMixin):
     context_object_name = 'single'
     form_class = CreateCommentForm
 
+    @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
         self.hit = Post.objects.filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
         return super(PostDetailArchive, self).get(request, *args, **kwargs)
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(PostDetailArchive, self).get_context_data(**kwargs)
         context['previous'] = Post.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
@@ -275,7 +288,7 @@ class PostDetailArchive(DetailView, FormMixin):
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
 
-@login_required()
+@login_required(login_url='users/login')
 def post_like(request, pk):
     print(pk)
     post = get_object_or_404(Post, id=pk)

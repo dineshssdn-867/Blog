@@ -20,6 +20,9 @@ class UserProfile(models.Model):
         self.slug = slugify(self.user.username)
         super(UserProfile, self).save(*args, **kwargs)
 
+    class Meta:
+        ordering = ["id"]
+
     def __str__(self):
         return self.user.username
 

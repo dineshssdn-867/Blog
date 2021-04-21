@@ -8,6 +8,7 @@ from posts.models import Post
 from .forms import RegisterForm, UserProfileForm
 from .models import UserProfile
 from django.urls import reverse, reverse_lazy
+from functools import lru_cache
 
 
 class RegisterView(SuccessMessageMixin, CreateView):
@@ -55,11 +56,13 @@ class UserProfileView(ListView):
     context_object_name = 'userposts'
     paginate_by = 5
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(UserProfileView, self).get_context_data(**kwargs)
         context['userprofile'] = UserProfile.objects.get(user=self.request.user)
         return context
 
+    @lru_cache(maxsize=None)
     def get_queryset(self):
         return Post.objects.filter(user=self.request.user).order_by('-id')
 
@@ -70,6 +73,7 @@ class UserPostView(ListView):
     context_object_name = 'posts'
     paginate_by = 5
 
+    @lru_cache(maxsize=None)
     def get_queryset(self):
         return Post.objects.filter(user=self.kwargs['pk'])
 
@@ -80,6 +84,7 @@ class UserListView(ListView):
     context_object_name = 'profiles'
     paginate_by = 5
 
+    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data(**kwargs)
         return context
