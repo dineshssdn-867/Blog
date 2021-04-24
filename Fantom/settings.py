@@ -90,7 +90,20 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'users': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'users_data.sqlite3'),
+    },
+    'posts': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'posts_data.sqlite3'),
+    },
+    'myarchive': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'myarchive_data.sqlite3'),
     }
+
 }
 
 # Password validation
@@ -195,3 +208,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 django_heroku.settings(locals())
+
+DATABASE_ROUTERS = ['routers.db_routers.AuthRouter','routers.db_routers.Blue','routers.db_routers.Aqua']
