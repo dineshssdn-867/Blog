@@ -160,7 +160,19 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
         'LOCATION': 'my_cache_table',
-    }
+    },
+    'users': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    },
+    'posts': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    },
+    'myarchive': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    },
 }
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'  # storing session using serializer
@@ -210,3 +222,5 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 django_heroku.settings(locals())
 
 DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.posts', 'routers.db_routers.myarchive']
+
+CACHE_ROUTER = ['routers.cache_routers.AuthRouter', 'routers.cache_routers.posts', 'routers.cache_routers.myarchive']
