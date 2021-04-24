@@ -24,7 +24,7 @@ class IndexView(ListView):
     @lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['slider_posts'] = Post.objects.all().filter(slider_post=True).order_by('id')
+        context['slider_posts'] = Post.objects.using('posts').all().filter(slider_post=True).order_by('id')
         return context
 
 
@@ -36,7 +36,7 @@ class MyView(ListView):
 
     @lru_cache(maxsize=None)
     def get_queryset(self):
-        self.category = UserProfile.objects.filter(user=self.request.user).values('category_like')
+        self.category = UserProfile.objects.using('users').filter(user=self.request.user).values('category_like')
         return super().get_queryset()
 
     @lru_cache(maxsize=None)
@@ -44,8 +44,8 @@ class MyView(ListView):
         context = super(MyView, self).get_context_data(**kwargs)
         for category in self.category:
             category = category['category_like']
-        context['slider_posts'] = Post.objects.filter(slider_post=True).filter(category=category).order_by('-pk')
-        context['posts'] = Post.objects.filter(category=category).order_by('-pk')
+        context['slider_posts'] = Post.objects.using('posts').filter(slider_post=True).filter(category=category).order_by('-pk')
+        context['posts'] = Post.objects.using('posts').filter(category=category).order_by('-pk')
         return context
 
 
@@ -57,18 +57,18 @@ class PostDetail(DetailView, FormMixin):
 
     @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
-        self.hit = Post.objects.filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
+        self.hit = Post.objects.using('posts').filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
         return super(PostDetail, self).get(request, *args, **kwargs)
 
     @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(PostDetail, self).get_context_data(**kwargs)
-        context['previous'] = Post.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
-        context['next'] = Post.objects.filter(id__gt=self.kwargs['pk']).order_by('pk').first()
+        context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
+        context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).order_by('pk').first()
         stuff = get_object_or_404(Post, id=self.kwargs['pk'])
         context['total_likes'] = stuff.total_likes()
         liked = False
-        if stuff.likes.filter(id=self.request.user.id).exists():
+        if stuff.likes.using('users').filter(id=self.request.user.id).exists():
             liked = True
         context['form'] = self.get_form()
         context['liked']= liked
@@ -122,7 +122,7 @@ class TagDetail(ListView):
     @lru_cache(maxsize=None)
     def get_queryset(self):
         self.tag = get_object_or_404(Tag, slug=self.kwargs['slug'])
-        return Post.objects.filter(tag=self.tag).order_by('id')
+        return Post.objects.using('posts').filter(tag=self.tag).order_by('id')
 
     @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
@@ -152,7 +152,7 @@ class CreatePostView(CreateView):
         tags = self.request.POST.get("tag").split(",")
 
         for tag in tags:
-            current_tag = Tag.objects.filter(slug=slugify(tag))
+            current_tag = Tag.objects.using('posts').filter(slug=slugify(tag))
             if current_tag.count() < 1:
                 create_tag = Tag.objects.create(title=tag)
                 form.instance.tag.add(create_tag)
@@ -178,12 +178,12 @@ class UpdatePostView(UpdateView):
         tags = self.request.POST.get("tag").split(",")
 
         for tag in tags:
-            current_tag = Tag.objects.filter(slug=slugify(tag))
+            current_tag = Tag.objects.using('posts').filter(slug=slugify(tag))
             if current_tag.count() < 1:
-                create_tag = Tag.objects.create(title=tag)
+                create_tag = Tag.objects.using('posts').create(title=tag)
                 form.instance.tag.add(create_tag)
             else:
-                existed_tag = Tag.objects.get(slug=slugify(tag))
+                existed_tag = Tag.objects.using('posts').get(slug=slugify(tag))
                 form.instance.tag.add(existed_tag)
         return super(UpdatePostView, self).form_valid(form)
 
@@ -229,21 +229,21 @@ class SearchView(ListView):
         query = self.request.GET.get("q")
 
         if query:
-            return Post.objects.filter(Q(title__icontains=query) |
+            return Post.objects.using('posts').filter(Q(title__icontains=query) |
                                        Q(content__icontains=query) |
                                        Q(tag__title__icontains=query)
                                        ).order_by('id').distinct()
 
-        return Post.objects.all().order_by('id')
+        return Post.objects.using('posts').all().order_by('id')
 
 
 @login_required()
 def CreateArchiveView(request, *args, **kwargs):
-    emailDetail = Post.objects.get(id=kwargs['pk'])
+    emailDetail = Post.objects.using('posts').get(id=kwargs['pk'])
     copyEmailDetail = Archive()
     for field in emailDetail.__dict__.keys():
         copyEmailDetail.__dict__[field] = emailDetail.__dict__[field]
-    copyEmailDetail.main_user = User.objects.get(id=request.user.id)
+    copyEmailDetail.main_user = User.objects.using('users').get(id=request.user.id)
     copyEmailDetail.save()
     return redirect('/')
 
@@ -257,14 +257,14 @@ class PostDetailArchive(DetailView, FormMixin):
 
     @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
-        self.hit = Post.objects.filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
+        self.hit = Post.objects.using('posts').filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
         return super(PostDetailArchive, self).get(request, *args, **kwargs)
 
     @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(PostDetailArchive, self).get_context_data(**kwargs)
-        context['previous'] = Post.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
-        context['next'] = Post.objects.filter(id__gt=self.kwargs['pk']).order_by('pk').first()
+        context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
+        context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).using('posts').order_by('pk').first()
         context['form'] = self.get_form()
         return context
 
@@ -290,11 +290,10 @@ class PostDetailArchive(DetailView, FormMixin):
 
 @login_required(login_url='users/login')
 def post_like(request, pk):
-    print(pk)
     post = get_object_or_404(Post, id=pk)
     slug = post.slug
-    if post.likes.filter(id=request.user.id).exists():
-        post.likes.remove(request.user)
+    if post.likes.using('posts').filter(id=request.user.id).exists():
+        post.likes.using('posts').remove(request.user)
     else:
-        post.likes.add(request.user)
+        post.likes.using('posts').add(request.user)
     return HttpResponseRedirect(reverse('posts:detail', kwargs={"pk": pk, "slug": slug}))

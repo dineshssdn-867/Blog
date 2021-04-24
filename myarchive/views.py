@@ -1,5 +1,4 @@
 from functools import lru_cache
-
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
@@ -18,7 +17,7 @@ class ArchiveView(ListView):
     @lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ArchiveView, self).get_context_data(**kwargs)
-        context['archives'] = Archive.objects.filter(main_user=self.request.user)
-        context['posts'] = Post.objects.all()
-        context['slider_posts'] = Post.objects.all().filter(slider_post=True)
+        context['archives'] = Archive.objects.using('myarchive').filter(main_user=self.request.user)
+        context['posts'] = Post.objects.using('myarchive').all()
+        context['slider_posts'] = Post.objects.using('myarchive').all().filter(slider_post=True)
         return context

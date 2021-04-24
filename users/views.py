@@ -59,12 +59,12 @@ class UserProfileView(ListView):
     @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(UserProfileView, self).get_context_data(**kwargs)
-        context['userprofile'] = UserProfile.objects.get(user=self.request.user)
+        context['userprofile'] = UserProfile.objects.using('users').get(user=self.request.user)
         return context
 
     @lru_cache(maxsize=None)
     def get_queryset(self):
-        return Post.objects.filter(user=self.request.user).order_by('-id')
+        return Post.objects.using('users').filter(user=self.request.user).order_by('-id')
 
 
 class UserPostView(ListView):
@@ -75,7 +75,7 @@ class UserPostView(ListView):
 
     @lru_cache(maxsize=None)
     def get_queryset(self):
-        return Post.objects.filter(user=self.kwargs['pk'])
+        return Post.objects.using('users').filter(user=self.kwargs['pk'])
 
 
 class UserListView(ListView):
