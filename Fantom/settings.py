@@ -209,4 +209,4 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 django_heroku.settings(locals())
 
-DATABASE_ROUTERS = ['routers.db_routers.AuthRouter','routers.db_routers.posts','routers.db_routers.myarchive']
+DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.posts', 'routers.db_routers.myarchive']
