@@ -34,16 +34,17 @@ class MyView(ListView):
     model = Post
     paginate_by = 3
 
-    @lru_cache(maxsize=None)
+    #@lru_cache(maxsize=None)
     def get_queryset(self):
         self.category = UserProfile.objects.using('users').filter(user=self.request.user).values('category_like')
         return super().get_queryset()
 
-    @lru_cache(maxsize=None)
+    #@lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(MyView, self).get_context_data(**kwargs)
         for category in self.category:
             category = category['category_like']
+        print(category)
         context['slider_posts'] = Post.objects.using('posts').filter(slider_post=True).filter(category=category).order_by('-pk')
         context['posts'] = Post.objects.using('posts').filter(category=category).order_by('-pk')
         return context
@@ -295,7 +296,7 @@ def post_like(request, pk):
     post = get_object_or_404(Post, id=pk)
     slug = post.slug
     if post.likes.using('posts').filter(id=request.user.id).exists():
-        post.likes.using('posts').remove(request.user)
+        post.likes.remove(request.user)
     else:
-        post.likes.using('posts').add(request.user)
+        post.likes.add(request.user)
     return HttpResponseRedirect(reverse('posts:detail', kwargs={"pk": pk, "slug": slug}))

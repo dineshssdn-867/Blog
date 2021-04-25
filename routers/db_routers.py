@@ -1,5 +1,5 @@
 class AuthRouter:
-    route_app_labels = ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
+    route_app_labels = ['auth', 'contenttypes', 'sessions', 'admin', 'users']
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:
@@ -26,7 +26,7 @@ class AuthRouter:
 
 
 class posts:
-    route_app_labels = ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
+    route_app_labels = ['posts']
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:
@@ -53,7 +53,7 @@ class posts:
 
 
 class myarchive:
-    route_app_labels = ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
+    route_app_labels = ['myarchive']
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:
