@@ -1,11 +1,9 @@
-from cloudinary_storage import storage
-from django.db import models
 from django.conf import settings
-from django.template.defaultfilters import slugify
-from PIL import Image
+from django.db import models
 from django.db.models.signals import post_save
-from posts.models import Category
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from posts.models import Category
 
 
 class UserProfile(models.Model):

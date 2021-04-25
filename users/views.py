@@ -35,7 +35,7 @@ class UserProfileUpdateView(SuccessMessageMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.save()
+        form.save(commit=False)
         return super(UserProfileUpdateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -52,7 +52,7 @@ class UserProfileUpdateView(SuccessMessageMixin, UpdateView):
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
 class UserProfileView(ListView):
     template_name = 'users/my-profile.html'
-    model = Post
+    model = UserProfile
     context_object_name = 'userposts'
     paginate_by = 5
 
@@ -64,7 +64,7 @@ class UserProfileView(ListView):
 
     @lru_cache(maxsize=None)
     def get_queryset(self):
-        return Post.objects.using('users').filter(user=self.request.user).order_by('-id')
+        return Post.objects.using('posts').filter(user=self.request.user).order_by('-id')
 
 
 class UserPostView(ListView):
@@ -75,7 +75,7 @@ class UserPostView(ListView):
 
     @lru_cache(maxsize=None)
     def get_queryset(self):
-        return Post.objects.using('users').filter(user=self.kwargs['pk'])
+        return Post.objects.using('posts').filter(user=self.kwargs['pk'])
 
 
 class UserListView(ListView):

@@ -142,22 +142,23 @@ class CreatePostView(CreateView):
         post = get_object_or_404(Post, id=self.object.pk)
         if post.image.width <= 450 and post.image.height <= 540:
             post.slider_post = True
-        post.save()
+        post.save(using='posts')
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.save()
+        form.save(commit=False)
 
         tags = self.request.POST.get("tag").split(",")
 
         for tag in tags:
             current_tag = Tag.objects.using('posts').filter(slug=slugify(tag))
             if current_tag.count() < 1:
-                create_tag = Tag.objects.create(title=tag)
+                create_tag = Tag.objects.using('posts').create(title=tag)
                 form.instance.tag.add(create_tag)
             else:
-                existed_tag = Tag.objects.get(slug=slugify(tag))
+                existed_tag = Tag.objects.using('posts').get(slug=slugify(tag))
+                print(existed_tag)
                 form.instance.tag.add(existed_tag)
         return super(CreatePostView, self).form_valid(form)
 
