@@ -147,7 +147,8 @@ class CreatePostView(CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.save(commit=False)
+        self.object = form.save(commit=False)
+        self.object.save()
 
         tags = self.request.POST.get("tag").split(",")
 

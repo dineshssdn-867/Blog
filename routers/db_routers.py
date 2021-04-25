@@ -1,5 +1,5 @@
 class AuthRouter:
-    route_app_labels = {'auth', 'contenttypes', 'sessions', 'admin', 'users'}
+    route_app_labels = ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:
@@ -13,8 +13,8 @@ class AuthRouter:
 
     def allow_relation(self, obj1, obj2, **hints):
         if (
-                obj1._meta.app_label in self.route_app_labels or
-                obj2._meta.app_label in self.route_app_labels
+                obj1._meta.app_label in ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users'] or
+                obj2._meta.app_label in ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
         ):
             return True
         return None
@@ -26,7 +26,7 @@ class AuthRouter:
 
 
 class posts:
-    route_app_labels = {'posts'}
+    route_app_labels = ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:
@@ -38,6 +38,14 @@ class posts:
             return 'posts'
         return None
 
+    def allow_relation(self, obj1, obj2, **hints):
+        if (
+                obj1._meta.app_label in ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users'] or
+                obj2._meta.app_label in ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
+        ):
+            return True
+        return None
+
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         if app_label in self.route_app_labels:
             return db == 'posts'
@@ -45,7 +53,7 @@ class posts:
 
 
 class myarchive:
-    route_app_labels = {'myarchive'}
+    route_app_labels = ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:
@@ -60,4 +68,12 @@ class myarchive:
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         if app_label in self.route_app_labels:
             return db == 'myarchive'
+        return None
+
+    def allow_relation(self, obj1, obj2, **hints):
+        if (
+                obj1._meta.app_label in ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users'] or
+                obj2._meta.app_label in ['posts', 'myarchive', 'auth', 'contenttypes', 'sessions', 'admin', 'users']
+        ):
+            return True
         return None

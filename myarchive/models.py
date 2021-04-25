@@ -16,3 +16,7 @@ class Archive(models.Model):
     slider_post = models.BooleanField(_('slider_post'), default=False)
     hit = models.PositiveIntegerField(_('hit'), default=0)
     main_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None)
+
+    class Meta:
+        ordering = ["id"]
+        app_label = 'myarchive'

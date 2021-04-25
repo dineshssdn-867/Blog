@@ -35,7 +35,8 @@ class UserProfileUpdateView(SuccessMessageMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.save(commit=False)
+        self.object = form.save(commit=False)
+        self.object.save()
         return super(UserProfileUpdateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -45,7 +46,6 @@ class UserProfileUpdateView(SuccessMessageMixin, UpdateView):
         self.object = self.get_object()
         if self.object.user != request.user:
             return HttpResponseRedirect('/')
-
         return super(UserProfileUpdateView, self).get(request, *args, **kwargs)
 
 
@@ -59,7 +59,8 @@ class UserProfileView(ListView):
     @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(UserProfileView, self).get_context_data(**kwargs)
-        context['userprofile'] = UserProfile.objects.using('users').get(user=self.request.user)
+        print(self.request.user)
+        context['userprofile'] = UserProfile.objects.get(user=self.request.user)
         return context
 
     @lru_cache(maxsize=None)

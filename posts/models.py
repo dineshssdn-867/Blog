@@ -14,6 +14,10 @@ class Category(models.Model):
         self.slug = slugify(self.title)
         super(Category, self).save(*args, **kwargs)
 
+    class Meta:
+        ordering = ["id"]
+        app_label = 'posts'
+
     def __str__(self):
         return self.title
 
@@ -27,6 +31,10 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ["id"]
+        app_label = 'posts'
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -54,6 +62,7 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["id"]
+        app_label = 'posts'
 
     def comment_count(self):
         return self.comments.all().count()
@@ -75,6 +84,10 @@ class Comment(models.Model):
     email = models.EmailField(_('email'), max_length=100)
     content = models.TextField(_('content'))
     publishing_date = models.DateField(_('publishing_date'), auto_now_add=True)
+
+    class Meta:
+        ordering = ["id"]
+        app_label = 'posts'
 
     def __str__(self):
         return self.post.title

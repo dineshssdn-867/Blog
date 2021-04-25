@@ -20,6 +20,7 @@ class UserProfile(models.Model):
 
     class Meta:
         ordering = ["id"]
+        app_label = 'users'
 
     def __str__(self):
         return self.user.username
