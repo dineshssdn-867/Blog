@@ -57,9 +57,6 @@ class Post(models.Model):
     hit = models.PositiveIntegerField(_('hit'), default=0)
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='blog_post')
 
-    def total_likes(self):
-        return self.likes.all().count()
-
     class Meta:
         ordering = ["id"]
         app_label = 'posts'
@@ -84,6 +81,7 @@ class Comment(models.Model):
     email = models.EmailField(_('email'), max_length=100)
     content = models.TextField(_('content'))
     publishing_date = models.DateField(_('publishing_date'), auto_now_add=True)
+    image = models.ImageField(_('image'), blank=True, null=True, upload_to='comments/')
 
     class Meta:
         ordering = ["id"]

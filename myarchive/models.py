@@ -16,6 +16,7 @@ class Archive(models.Model):
     slider_post = models.BooleanField(_('slider_post'), default=False)
     hit = models.PositiveIntegerField(_('hit'), default=0)
     main_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None)
+    post=models.ForeignKey(Post, on_delete=models.CASCADE, default=None, related_name='posts')
 
     class Meta:
         ordering = ["id"]

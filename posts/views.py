@@ -11,7 +11,7 @@ from django.views.generic.edit import FormMixin
 from myarchive.models import Archive
 from users.models import UserProfile
 from .forms import PostCreationForm, PostUpdateForm, CreateCommentForm
-from .models import Post, Category, Tag
+from .models import Post, Category, Tag, Comment
 from functools import lru_cache
 
 
@@ -25,21 +25,22 @@ class IndexView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['slider_posts'] = Post.objects.using('posts').all().filter(slider_post=True).order_by('id')
+        print(context['slider_posts'])
         return context
 
 
-@method_decorator(login_required(login_url='users/login'), name="dispatch")
+@method_decorator(login_required(login_url='/users/login'), name="dispatch")
 class MyView(ListView):
     template_name = "posts/index.html"
     model = Post
     paginate_by = 3
 
-    #@lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)
     def get_queryset(self):
         self.category = UserProfile.objects.using('users').filter(user=self.request.user).values('category_like')
         return super().get_queryset()
 
-    #@lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(MyView, self).get_context_data(**kwargs)
         for category in self.category:
@@ -66,14 +67,18 @@ class PostDetail(DetailView, FormMixin):
         context = super(PostDetail, self).get_context_data(**kwargs)
         context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
         context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).order_by('pk').first()
+        context['myarchive']=Archive.objects.filter(post=self.kwargs['pk']).values('id')
+        print(Archive.objects.filter(post=self.kwargs['pk']).values('id'))
         stuff = get_object_or_404(Post, id=self.kwargs['pk'])
-        context['total_likes'] = stuff.total_likes()
+        context['total_likes'] = Post.objects.using('posts').filter(id=stuff.id).values('likes').count()
         liked = False
-        if stuff.likes.using('users').filter(id=self.request.user.id).exists():
+        if stuff.likes.using('posts').filter(id=self.request.user.id).exists():
             liked = True
         context['form'] = self.get_form()
         context['liked']= liked
+        context['userprofile'] = UserProfile.objects.using('users').filter(user_id=stuff.user.id)
         return context
+
 
     def form_valid(self, form):
         if form.is_valid():
@@ -133,7 +138,7 @@ class TagDetail(ListView):
         return context
 
 
-@method_decorator(login_required(login_url='users/login'), name="dispatch")
+@method_decorator(login_required(login_url='/users/login'), name="dispatch")
 class CreatePostView(CreateView):
     template_name = 'posts/create-post.html'
     form_class = PostCreationForm
@@ -165,7 +170,7 @@ class CreatePostView(CreateView):
         return super(CreatePostView, self).form_valid(form)
 
 
-@method_decorator(login_required(login_url='users/login'), name="dispatch")
+@method_decorator(login_required(login_url='/users/login'), name="dispatch")
 class UpdatePostView(UpdateView):
     model = Post
     template_name = 'posts/post-update.html'
@@ -199,7 +204,7 @@ class UpdatePostView(UpdateView):
         return super(UpdatePostView, self).get(request, *args, **kwargs)
 
 
-@method_decorator(login_required(login_url='users/login'), name="dispatch")
+@method_decorator(login_required(login_url='/users/login'), name="dispatch")
 class DeletePostView(DeleteView):
     model = Post
     success_url = '/'
@@ -240,7 +245,7 @@ class SearchView(ListView):
         return Post.objects.using('posts').all().order_by('id')
 
 
-@login_required()
+@login_required(login_url='/users/login')
 def CreateArchiveView(request, *args, **kwargs):
     emailDetail = Post.objects.using('posts').get(id=kwargs['pk'])
     copyEmailDetail = Archive()
@@ -251,7 +256,7 @@ def CreateArchiveView(request, *args, **kwargs):
     return redirect('/')
 
 
-@method_decorator(login_required(login_url='users/login'), name="dispatch")
+@method_decorator(login_required(login_url='/users/login'), name="dispatch")
 class PostDetailArchive(DetailView, FormMixin):
     template_name = 'posts/detail_archive.html'
     model = Post
@@ -267,8 +272,15 @@ class PostDetailArchive(DetailView, FormMixin):
     def get_context_data(self, **kwargs):
         context = super(PostDetailArchive, self).get_context_data(**kwargs)
         context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
-        context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).using('posts').order_by('pk').first()
+        context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).order_by('pk').first()
+        stuff = get_object_or_404(Post, id=self.kwargs['pk'])
+        context['total_likes'] = Post.objects.using('posts').filter(id=stuff.id).values('likes').count()
+        liked = False
+        if stuff.likes.using('posts').filter(id=self.request.user.id).exists():
+            liked = True
         context['form'] = self.get_form()
+        context['liked'] = liked
+        context['userprofile'] = UserProfile.objects.using('users').filter(user=stuff.user.id).values('image')
         return context
 
     def form_valid(self, form):
@@ -291,12 +303,14 @@ class PostDetailArchive(DetailView, FormMixin):
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
 
-@login_required(login_url='users/login')
+@login_required(login_url='/users/login')
 def post_like(request, pk):
     post = get_object_or_404(Post, id=pk)
     slug = post.slug
-    if post.likes.using('posts').filter(id=request.user.id).exists():
+    if post.likes.filter(id=request.user.id).exists():
+        print(post.likes.filter(id=request.user.id))
         post.likes.remove(request.user)
     else:
         post.likes.add(request.user)
+        print(post.likes.filter(id=request.user.id))
     return HttpResponseRedirect(reverse('posts:detail', kwargs={"pk": pk, "slug": slug}))
