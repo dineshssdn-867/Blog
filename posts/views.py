@@ -68,7 +68,6 @@ class PostDetail(DetailView, FormMixin):
         context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
         context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).order_by('pk').first()
         context['myarchive']=Archive.objects.filter(post=self.kwargs['pk']).values('id')
-        print(Archive.objects.filter(post=self.kwargs['pk']).values('id'))
         stuff = get_object_or_404(Post, id=self.kwargs['pk'])
         context['total_likes'] = Post.objects.using('posts').filter(id=stuff.id).values('likes').count()
         liked = False
@@ -76,7 +75,7 @@ class PostDetail(DetailView, FormMixin):
             liked = True
         context['form'] = self.get_form()
         context['liked']= liked
-        context['userprofile'] = UserProfile.objects.using('users').filter(user_id=stuff.user.id)
+        context['userprofile'] = UserProfile.objects.using('users').filter(user=stuff.user.id)
         return context
 
 

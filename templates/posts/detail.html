@@ -43,7 +43,9 @@
        										<p>{{ single.publishing_date }}</p>
        									</div>
        									<div class="d-flex">
-       										<img src="{{ userprofile.image.url }}" alt="{{ single.user.username }}" width="55" height="60">
+                                            {% for profile in userprofile %}
+       										<img src="{{ profile.image.url }}" alt="{{ single.user.username }}" width="55" height="60">{{ userprofile.bio }}
+                                            {% endfor %}
        									</div>
        								</div>
        							</div>
@@ -85,7 +87,7 @@
                                 {% if previous %}
                                 <div class="col-lg-6 col-md-6 col-12 nav-left flex-row d-flex justify-content-start align-items-center">
                                     <div class="thumb">
-                                        <a href="{% url 'posts:detail' previous.pk previous.slug %}"><img class="img-fluid" src="{{ previous.image.url }}" alt="" style="width:60px;height:60px"></a>
+                                        <a href="{% url 'posts:detail' previous.pk previous.slug %}"><img class="img-fluid" src="{{ previous.image.url }}" alt="{{ previous.title }}" style="width:60px;height:60px"></a>
                                     </div>
                                     <div class="arrow">
                                         <a href="{% url 'posts:detail' previous.pk previous.slug %}"><span class="lnr text-white lnr-arrow-left"></span></a>
@@ -121,7 +123,7 @@
                                         <a href="{% url 'posts:detail' next.pk next.slug %}"><span class="lnr text-white lnr-arrow-right"></span></a>
                                     </div>
                                     <div class="thumb">
-                                        <a href="{% url 'posts:detail' next.pk next.slug %}"><img class="img-fluid" src="{{ next.image.url }}" alt="" style="width:60px;height:60px"></a>
+                                        <a href="{% url 'posts:detail' next.pk next.slug %}"><img class="img-fluid" src="{{ next.image.url }}" alt="{{ next.title }}" style="width:60px;height:60px"></a>
                                     </div>
                                 </div>
                                 {% else %}
