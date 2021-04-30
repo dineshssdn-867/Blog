@@ -47,7 +47,10 @@ INSTALLED_APPS = [
     'myarchive',
     'cloudinary',
     'cloudinary_storage',
+    'newsletter'
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -123,6 +126,17 @@ DATABASES = {
     'myarchive': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'my_archive_data',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            "init_command": "SET foreign_key_checks = 0",
+        }
+    },
+    'newsletter': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'newsletter',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

@@ -26,4 +26,5 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('contact/', include('contact.urls')),
     path('archive/', include('myarchive.urls')),
+    path('newsletter/', include('newsletter.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
