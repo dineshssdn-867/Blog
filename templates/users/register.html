@@ -5,10 +5,10 @@
 {% block content %}
 
         <!--================Home Banner Area =================-->
-        <section class="banner_area">
+        <section class="banner_area position-sticky">
             <div class="banner_inner d-flex align-items-center">
             	<div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
-				<div class="container">
+				<div class="container position-sticky">
 					<div class="banner_content text-center">
 						<h2>Register</h2>
 						<div class="page_link">
@@ -20,9 +20,9 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-
+        {% include 'messages.html' %}
         <!--================Blog Area =================-->
-        <section class="blog_area p_120">
+        <section class="blog_area p_120 position-sticky">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8">
