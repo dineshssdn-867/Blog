@@ -39,15 +39,13 @@
                                         <ul>
                                             {% for field in form %}
                                             {% if field.errors %}
-                                            <li>{{ form.label }} : {{ field.errors|striptags }}</li>
+                                            <li>{{ form.label }} {{ field.errors|striptags }}</li>
                                             {% endif %}
                                             {% endfor %}
                                         </ul>
                                     </div>
                                 </div>
                                 {% endif %}
-
-
                                 <div class="mt-10">
 										<input type="text" name="username" placeholder="User Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'User Name'" required="" class="single-input">
 									</div>

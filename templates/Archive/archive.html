@@ -11,7 +11,7 @@
 					<div class="post_s_item">
 						<div class="post_img">
 							{% if post.image %}
-							<img src="{{ post.image.url }}" height="500" class="img-fluid" alt="">
+							<img src="{{ post.image.url }}" height="500" class="img-fluid" alt="{{ post.title }}">
 							{% endif %}
 						</div>
 						<div class="post_text">
@@ -41,7 +41,7 @@
                             <article class="blog_style1">
                             	<div class="blog_img">
                             		{% if post.image %}
-									<img src="{{ post.image.url }}" width="100%" class="img-fluid" alt="">
+									<img src="{{ post.image.url }}" width="100%" class="img-fluid" alt="{{ post.title }}">
 									{% endif %}
                             	</div>
                             	<div class="blog_text">

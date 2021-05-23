@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -182,25 +180,18 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/myview'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-RECAPTCHA_PUBLIC_KEY = '6LcE7cEaAAAAAER2j_uE2to8AL3FJmQM7NCBtB0m'
-RECAPTCHA_PRIVATE_KEY = '6LcE7cEaAAAAAEW7UKCK0ij7ScLsjltnzueabKmZ'
-
 CACHES = {
+    # 'default': {
+    #    'BACKEND': 'django_bmemcached.memcached.BMemcached',
+    #    'LOCATION': 'memcached-13159.c52.us-east-1-4.ec2.cloud.redislabs.com:13159',
+    #    'OPTIONS': {
+    #        'username': 'memcached-app209798443',
+    #        'password': 'QkRq3pV89RzvejXLDCLcVKm2YQreHXKS ',
+    #    }
+    # },
     'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'my_cache_table',
-    },
-    'users': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'my_cache_table',
-    },
-    'posts': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'my_cache_table',
-    },
-    'myarchive': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'my_cache_table',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
     },
 }
 
@@ -252,4 +243,8 @@ django_heroku.settings(locals())
 
 DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.posts', 'routers.db_routers.myarchive']
 
-CACHE_ROUTER = ['routers.cache_routers.AuthRouter', 'routers.cache_routers.posts', 'routers.cache_routers.myarchive']
+# del DATABASES['default']['OPTIONS']['sslmode']
+
+
+RECAPTCHA_PUBLIC_KEY = '6LcE7cEaAAAAAER2j_uE2to8AL3FJmQM7NCBtB0m'
+RECAPTCHA_PRIVATE_KEY = '6LcE7cEaAAAAAEW7UKCK0ij7ScLsjltnzueabKmZ'

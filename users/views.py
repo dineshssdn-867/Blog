@@ -1,20 +1,18 @@
+from functools import lru_cache
+
+import pyrebase
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect, request
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, ListView
+
 from posts.models import Post
 from .forms import RegisterForm, UserProfileForm
 from .models import UserProfile
-from django.urls import reverse, reverse_lazy
-from functools import lru_cache
-import pyrebase
-from django.forms.utils import ErrorList
-from django.contrib import messages
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
-
 
 firebaseConfig = {
     'apiKey': "AIzaSyAGJFENEV_gia2sI-9lZnm25Va9Z8JASIU",

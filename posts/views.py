@@ -25,7 +25,6 @@ class IndexView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['slider_posts'] = Post.objects.using('posts').all().filter(slider_post=True).order_by('id')
-        print(context['slider_posts'])
         return context
 
 
@@ -45,7 +44,6 @@ class MyView(ListView):
         context = super(MyView, self).get_context_data(**kwargs)
         for category in self.category:
             category = category['category_like']
-        print(category)
         context['slider_posts'] = Post.objects.using('posts').filter(slider_post=True).filter(category=category).order_by('-pk')
         context['posts'] = Post.objects.using('posts').filter(category=category).order_by('-pk')
         return context
@@ -67,17 +65,16 @@ class PostDetail(DetailView, FormMixin):
         context = super(PostDetail, self).get_context_data(**kwargs)
         context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
         context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).order_by('pk').first()
-        context['myarchive']=Archive.objects.filter(post=self.kwargs['pk']).values('id')
+        context['myarchive'] = Archive.objects.filter(post=self.kwargs['pk']).values('id')
         stuff = get_object_or_404(Post, id=self.kwargs['pk'])
         context['total_likes'] = Post.objects.using('posts').filter(id=stuff.id).values('likes').count()
         liked = False
         if stuff.likes.using('posts').filter(id=self.request.user.id).exists():
             liked = True
         context['form'] = self.get_form()
-        context['liked']= liked
+        context['liked'] = liked
         context['userprofile'] = UserProfile.objects.using('users').filter(user=stuff.user.id)
         return context
-
 
     def form_valid(self, form):
         if form.is_valid():
@@ -237,9 +234,9 @@ class SearchView(ListView):
 
         if query:
             return Post.objects.using('posts').filter(Q(title__icontains=query) |
-                                       Q(content__icontains=query) |
-                                       Q(tag__title__icontains=query)
-                                       ).order_by('id').distinct()
+                                                      Q(content__icontains=query) |
+                                                      Q(tag__title__icontains=query)
+                                                      ).order_by('id').distinct()
 
         return Post.objects.using('posts').all().order_by('id')
 
