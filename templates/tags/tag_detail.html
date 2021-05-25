@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-
-
+{% load cache %}
 {% block content %}
+{% cache 2500 tag_post_1 %}
 
         <!--================Home Banner Area =================-->
         <section class="banner_area">
@@ -13,14 +13,16 @@
 						<h2>Tag</h2>
 						<div class="page_link">
 							<a href="{% url 'posts:index' %}">Home</a>
+							{% endcache %}
 							<a href="#">{{ tag.title }}</a>
+							{% cache 2500 tag_post_2 %}
 						</div>
 					</div>
 				</div>
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-
+{% endcache %}
         <!--================Blog Area =================-->
         <section class="blog_area p_120">
             <div class="container">

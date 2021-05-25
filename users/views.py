@@ -1,33 +1,35 @@
-from functools import lru_cache
-
-import pyrebase
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
 from django.views.generic import CreateView, UpdateView, ListView
-
 from posts.models import Post
 from .forms import RegisterForm, UserProfileForm
 from .models import UserProfile
+from django.urls import reverse, reverse_lazy
+import pyrebase
+from django.contrib import messages
+import os
 
 firebaseConfig = {
-    'apiKey': "AIzaSyAGJFENEV_gia2sI-9lZnm25Va9Z8JASIU",
-    'authDomain': "d-s-blog-7c796.firebaseapp.com",
-    "databaseURL": "https://d-s-blog-7c796-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    'projectId': "d-s-blog-7c796",
-    'storageBucket': "d-s-blog-7c796.appspot.com",
-    'messagingSenderId': "747551234600",
-    'appId': "1:747551234600:web:654f9d2994eb7c7445b31d",
-    'measurementId': "G-QRD0E9BPB3"
+    'apiKey':  os.environ.get('api_key'),
+    'authDomain':  os.environ.get('authdomain'),
+    "databaseURL":  os.environ.get('database'),
+    'projectId': os.environ.get('project_id'),
+    'storageBucket': os.environ.get('storagebucket'),
+    'messagingSenderId': os.environ.get('sender_id'),
+    'appId': os.environ.get('app_id'),
+    'measurementId': os.environ.get('measurement_id')
 }
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class RegisterView(SuccessMessageMixin, CreateView):
     template_name = 'users/register.html'
     form_class = RegisterForm
@@ -47,74 +49,79 @@ class RegisterView(SuccessMessageMixin, CreateView):
             return HttpResponseRedirect(reverse('users:register'))
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class UserLoginView(LoginView):
     template_name = 'users/login.html'
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class UserLogoutView(LogoutView):
     template_name = 'users/login.html'
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class UserProfileUpdateView(SuccessMessageMixin, UpdateView):
     model = UserProfile
     template_name = 'users/profile-update.html'
     form_class = UserProfileForm
     success_message = "Your Profile Has Been Updated!!!"
+    success_url = '/'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        self.object = form.save(commit=False)
-        self.object.save()
+        form.save()
         return super(UserProfileUpdateView, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse('users:update_profile', kwargs={'slug': self.object.slug})
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.user != request.user:
             return HttpResponseRedirect('/')
+
         return super(UserProfileUpdateView, self).get(request, *args, **kwargs)
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class UserProfileView(ListView):
     template_name = 'users/my-profile.html'
-    model = UserProfile
+    model = Post
     context_object_name = 'userposts'
     paginate_by = 5
 
-    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(UserProfileView, self).get_context_data(**kwargs)
-        print(self.request.user)
         context['userprofile'] = UserProfile.objects.get(user=self.request.user)
         return context
 
-    @lru_cache(maxsize=None)
     def get_queryset(self):
-        return Post.objects.using('posts').filter(user=self.request.user).order_by('-id')
+        return Post.objects.filter(user=self.request.user).order_by('-id')
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class UserPostView(ListView):
     template_name = 'users/user-post.html'
     model = Post
     context_object_name = 'posts'
     paginate_by = 5
 
-    @lru_cache(maxsize=None)
     def get_queryset(self):
-        return Post.objects.using('posts').filter(user=self.kwargs['pk'])
+        return Post.objects.filter(user=self.kwargs['pk'])
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class UserListView(ListView):
     template_name = 'users/user-list.html'
     model = UserProfile
     context_object_name = 'profiles'
     paginate_by = 5
 
-    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data(**kwargs)
         return context

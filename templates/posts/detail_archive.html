@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
-
+{% load cache %}
 {% block content %}
+{% cache 2500 archive_detail_post_1 %}
 
         <!--================Home Banner Area =================-->
         <section class="banner_area">
             <div class="banner_inner d-flex align-items-center">
-            	<div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
+            	<div class="overlay bg-parallax"    data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
 				<div class="container">
 					<div class="banner_content text-center">
 						<h2>Blog Post Details</h2>
@@ -20,7 +21,7 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-
+{% endcache %}
         <!--================Blog Area =================-->
         <section class="blog_area p_120 single-post-area">
             <div class="container">
@@ -55,15 +56,6 @@
                             <a href="{% url 'posts:post_delete' single.pk single.slug %}" class="genric-btn danger circle">Delete</a>
       						{% endif %}
                             <div class="news_d_footer">
-                                <form action="{% url 'posts:like_post' single.pk %}" method="post">
-                                    {% csrf_token %}
-                                    {% if liked %}
-      							    <button type="submit" value="{{ post.id }}" name="post_id" class="btn btn-danger"><i class="lnr lnr lnr-heart"></i></a></button> {{total_likes}}
-                                    {% else %}
-                                    <button type="submit" value="{{ post.id }}" name="post_id" class="btn btn-secondary"><i class="lnr lnr lnr-heart"></i></a></button> {{total_likes}}
-                                    {% endif %}
-                                 </form>
-      							<a class="justify-content-center ml-auto" href="#"><i class="lnr lnr lnr-bubble"></i>{{ single.comment_count }} Comments</a>
       							<div class="news_socail ml-auto">
 									<a href="#"><i class="fa fa-facebook"></i></a>
 									<a href="#"><i class="fa fa-twitter"></i></a>
@@ -134,51 +126,6 @@
 
                                 {% endif %}
                             </div>
-                        </div>
-                        <div class="comments-area">
-                            <h4>{{ single.comment_count }} Comments</h4>
-                            {% for comment in single.comments.all %}
-                            <div class="comment-list">
-                                <div class="single-comment justify-content-between d-flex">
-                                    <div class="user justify-content-between d-flex">
-                                        <div class="thumb">
-                                            <img src="{{ comment.image.url }}" width="70" height="80"  alt="">
-                                        </div>
-                                        <div class="desc">
-                                            <h5><a href="#">{{ comment.name }}</a></h5>
-                                            <p class="date">{{ comment.publishing_date }} </p>
-                                            <p class="comment">
-                                                {{ comment.content }}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            {% endfor %}
-
-                        </div>
-                        <div class="comment-form">
-                            <h4>Leave a Reply</h4>
-                            {% if form.errors %}
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <div id="form_errors">
-                                    {% for key,value in form.errors.items %}
-                                    <span class="fieldWrapper">
-                                        {{ key }} : {{ value }}
-
-
-                                    </span>
-                                    {% endfor %}
-                                </div>
-
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-
-                            </div>
-                            {% endif %}
-                            {% crispy form %}
                         </div>
         			</div>
                     {% include 'right_side.html' %}

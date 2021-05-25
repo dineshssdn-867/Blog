@@ -14,15 +14,14 @@ class Category(models.Model):
         self.slug = slugify(self.title)
         super(Category, self).save(*args, **kwargs)
 
-    class Meta:
-        ordering = ["id"]
-        app_label = 'posts'
-
     def __str__(self):
         return self.title
 
     def post_count(self):
         return self.posts.all().count()
+
+    class Meta:
+        ordering = ["id"]
 
 
 class Tag(models.Model):
@@ -32,16 +31,15 @@ class Tag(models.Model):
     def __str__(self):
         return self.title
 
-    class Meta:
-        ordering = ["id"]
-        app_label = 'posts'
-
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(Tag, self).save(*args, **kwargs)
 
     def post_count(self):
         return self.posts.all().count()
+
+    class Meta:
+        ordering = ["id"]
 
 
 class Post(models.Model):
@@ -57,9 +55,11 @@ class Post(models.Model):
     hit = models.PositiveIntegerField(_('hit'), default=0)
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='blog_post')
 
+    def total_likes(self):
+        return self.likes.all().count()
+
     class Meta:
         ordering = ["id"]
-        app_label = 'posts'
 
     def comment_count(self):
         return self.comments.all().count()
@@ -81,11 +81,9 @@ class Comment(models.Model):
     email = models.EmailField(_('email'), max_length=100)
     content = models.TextField(_('content'))
     publishing_date = models.DateField(_('publishing_date'), auto_now_add=True)
-    image = models.ImageField(_('image'), blank=True, null=True, upload_to='comments/')
-
-    class Meta:
-        ordering = ["id"]
-        app_label = 'posts'
 
     def __str__(self):
         return self.post.title
+
+    class Meta:
+        ordering = ["id"]

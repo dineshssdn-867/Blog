@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-
-
+{% load cache %}
 {% block content %}
-
+{% cache 2500 create_post_1 %}
         <!--================Home Banner Area =================-->
         <section class="banner_area">
             <div class="banner_inner d-flex align-items-center">
@@ -20,15 +19,16 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-
+{% endcache %}
         <!--================Blog Area =================-->
+{% cache 2500 create_post_2 %}
         <section class="blog_area p_120">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8">
-
                         <h2 style="text-align:center;color:blue">Create Post</h2>
                         <div class="blog_left_sidebar">
+                            {% endcache %}
                             <form method="post" enctype="multipart/form-data">
 
                                 {% csrf_token %}

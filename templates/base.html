@@ -1,10 +1,14 @@
 {% load static %}
 {% load custom_tags %}
+{% load pwa %}
+{% load cache %}
+{% cache 2500 base_header_1 %}
 <!doctype html>
 <html lang="en">
     <head>
         <!-- Required meta tags -->
         <meta charset="utf-8">
+        {% progressive_web_app_meta %}
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta description="Hello there.Fantom blog believes in exploring many aspects through a medium of blogs.It is a platform where a writer or a group of writers share their views on many aspects throught the medium of 240-250 characters ">
         <link rel="icon" href="{% static 'img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png' %}" type="image/png">
@@ -27,19 +31,20 @@
         <header class="header_area">
             <div class="logo_part">
             	<div class="container">
-            		<a class="logo" href="{% url 'posts:index' %}"><img src="{% static 'img/ds.png' %}" alt=""></a>
+            		<a class="logo" href="{% url 'posts:index' %}"><img src="{% static 'img/ds.png' %}" alt="D's Logo"></a>
             	</div>
             </div>
 			<div class="main_menu">
 				<nav class="navbar navbar-expand-lg navbar-light">
 					<div class="container">
 						<!-- Brand and toggle get grouped for better mobile display -->
-						<a class="navbar-brand logo_h" href="{% url 'posts:index' %}"><img src="{% static 'img/ds.png' %}" alt=""></a>
+						<a class="navbar-brand logo_h" href="{% url 'posts:index' %}"><img src="{% static 'img/ds.png' %}" alt="D's Logo"></a>
 						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
+                        {% endcache %}
 						<!-- Collect the nav links, forms, and other content for toggling -->
 						<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 							<ul class="nav navbar-nav menu_nav">
@@ -99,6 +104,7 @@
 
 
     <!--================ start footer Area  =================-->
+        {% cache 2500 base_footer_1 %}
         <footer class="footer-area">
             <div class="container">
                 <div class="row">
@@ -173,6 +179,7 @@
         <script src="{% static 'js/theme.js' %}"></script>
         <!--<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFrUVK-4UChjW2R6xGveDx3Xt21fdOCbs&callback=initMap"></script>-->
         <!--<script src="{% static 'js/gmaps.min.js' %}"></script> -->
+        {% endcache %}
         <script type="text/javascript">
 	    $(document).ready(function(){
 	    console.log($(window).width())

@@ -69,13 +69,19 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                ('django.template.loaders.cached.Loader', [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ]),
             ],
         },
     },
@@ -88,49 +94,9 @@ WSGI_APPLICATION = 'Fantom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'd_s_blog',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0",
-        }
-    },
-    'users': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'users_data',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0",
-        }
-    },
-    'posts': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'posts_data',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0",
-        }
-    },
-    'myarchive': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'my_archive_data',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0",
-        }
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
 # Password validation
@@ -173,34 +139,44 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-MEDIA_URL = '/media/'
+MEDIA_URL = '/blog/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/myview'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+RECAPTCHA_PUBLIC_KEY = os.environ.get('public_key')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('private_key')
+
 CACHES = {
-    # 'default': {
-    #    'BACKEND': 'django_bmemcached.memcached.BMemcached',
-    #    'LOCATION': 'memcached-13159.c52.us-east-1-4.ec2.cloud.redislabs.com:13159',
-    #    'OPTIONS': {
-    #        'username': 'memcached-app209798443',
-    #        'password': 'QkRq3pV89RzvejXLDCLcVKm2YQreHXKS ',
-    #    }
-    # },
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
+        'BACKEND': 'django_bmemcached.memcached.BMemcached',
+        'TIMEOUT': None,
+        'LOCATION': os.environ.get('location'),
+        'OPTIONS': {
+            'username': os.environ.get('username'),
+            'password': os.environ.get('password'),
+        }
     },
+    "special_cache": {
+        'BACKEND': 'django_bmemcached.memcached.BMemcached',
+        'LOCATION': os.environ.get('location'),
+        'OPTIONS': {
+                    'username': os.environ.get('username'),
+                    'password': os.environ.get('password')
+        }
+    }
+
 }
 
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'  # storing session using serializer
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'  # storing session using serializer
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # This is for storing sessions in cache
+SESSION_CACHE_ALIAS = 'default'
 
 PWA_APP_NAME = "D's Blog"
 PWA_APP_DESCRIPTION = "A blog is a discussion or informational website published on the World Wide Web consisting of discrete, often informal diary-style text entries. Posts are typically displayed in reverse chronological order, so that the most recent post appears first, at the top of the web page"
-PWA_APP_BACKGROUND_COLOR = '#000000'
+PWA_APP_BACKGROUND_COLOR = '#FFFFFF'
 PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = '/'
 PWA_APP_ORIENTATION = 'any'
@@ -210,14 +186,14 @@ PWA_APP_THEME_COLOR = '#0A0302'
 PWA_APP_ICONS = [
     {
         'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png',
-        'sizes': '160x160', 'purpose': 'any maskable',
+        'sizes': '512x512', 'purpose': 'any maskable',
         'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png',
         'sizes': '512x512', 'purpose': 'any maskable'}
 ]
 PWA_APP_ICONS_APPLE = [
     {
         'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png',
-        'sizes': '160x160'}
+        'sizes': '512x512'}
 ]
 PWA_APP_SPLASH_SCREEN = [{'src': '/static/images/571658cd2ec465a08e2dc2cf30258023.png',
                           'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'}]
@@ -225,14 +201,14 @@ PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
 PWA_APP_DEBUG_MODE = True
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dineshscloud',
-    'API_KEY': '858455229732434',
-    'API_SECRET': 'VTDlyF-OhpkS9hOvqxxBCMqGT3A',
+    'CLOUD_NAME':  os.environ.get('username'),
+    'API_KEY':  os.environ.get('api_key'),
+    'API_SECRET':  os.environ.get('api_secret'),
 }
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -240,11 +216,4 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 django_heroku.settings(locals())
-
-DATABASE_ROUTERS = ['routers.db_routers.AuthRouter', 'routers.db_routers.posts', 'routers.db_routers.myarchive']
-
-# del DATABASES['default']['OPTIONS']['sslmode']
-
-
-RECAPTCHA_PUBLIC_KEY = '6LcE7cEaAAAAAER2j_uE2to8AL3FJmQM7NCBtB0m'
-RECAPTCHA_PRIVATE_KEY = '6LcE7cEaAAAAAEW7UKCK0ij7ScLsjltnzueabKmZ'
+del DATABASES['default']['OPTIONS']['sslmode']

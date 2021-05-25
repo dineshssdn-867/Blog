@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block content %}
         <!--================Post Slider Area =================-->
         <section class="post_slider_area">
@@ -11,14 +10,11 @@
 					<div class="post_s_item">
 						<div class="post_img">
 							{% if post.image %}
-							<img src="{{ post.image.url }}" height="500" class="img-fluid" alt="{{ post.title }}">
+							<img src="{{ post.image.url }}" height="500" class="img-responsive" alt="{{post.title}}">
 							{% endif %}
 						</div>
 						<div class="post_text">
-							{% for tag in post.tag.all %}
-							<a class="cat" href="{% url 'posts:tag_detail' tag.slug %}">{{ tag.title }}</a>
-							{% endfor %}
-							<a href="{% url 'posts:detail_archive' pk=post.pk slug=post.slug %}"><h4>{{ post.title }}</h4></a>
+							<a href="{% url 'posts:detail_archive' pk=post.pk  %}"><h4>{{ post.title }}</h4></a>
 							<p>{{ post.content | truncatechars:150 }}</p>
 							<div class="date">
 								<a href="#"><i class="fa fa-calendar" aria-hidden="true"></i> {{ post.publishing_date}}</a>
@@ -46,10 +42,7 @@
                             	</div>
                             	<div class="blog_text">
 									<div class="blog_text_inner">
-										{% for tag in post.tag.all %}
-										<a class="cat" href="#">{{ tag.title }}</a>
-										{% endfor %}
-										<a href="{% url 'posts:detail_archive' pk=post.pk slug=post.slug %}"><h4>{{ post.title }}</h4></a>
+										<a href="{% url 'posts:detail_archive' pk=post.pk  %}"><h4>{{ post.title }}</h4></a>
 										<p>{{ post.content|truncatechars:175 }}</p>
 										<div class="date">
 											<a href="#"><i class="fa fa-calendar" aria-hidden="true"></i> {{ post.publishing_date }}</a>

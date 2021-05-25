@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-
-
+{% load cache %}
 {% block content %}
+{% cache 2500 user_list %}
 
         <!--================Home Banner Area =================-->
         <section class="banner_area">
@@ -20,7 +20,7 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-
+{% endcache %}
         <!--================Blog Area =================-->
         <section class="blog_area p_120">
             <div class="container">
@@ -29,7 +29,7 @@
                         <div class="blog_left_sidebar" style="text-align:center">
 							{% for profile in profiles %}
                             <div class="container" style="border-style:solid;border-width;2px;border-color:green;margin-bottom:5px">
-                                <img src="{{ profile.image.url }}">
+                                <img src="{{ profile.image.url }}" class="img-responsive">
                                 <a href="{% url 'users:user_posts' pk=profile.user.pk %}"> <h4>{{ profile.user.username }}</h4></a>
                                 <p>{{ profile.bio }}</p>
                                 <p>{{ profile.birth_day }}</p>

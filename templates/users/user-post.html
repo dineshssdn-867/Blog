@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
+{% load cache %}
 {% block content %}
+{% cache 2500 user_post %}
 
         <!--================Home Banner Area =================-->
         <section class="banner_area">
@@ -20,7 +21,7 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-
+{% endcache %}
         <!--================Blog Area =================-->
         <section class="blog_area p_120">
             <div class="container">

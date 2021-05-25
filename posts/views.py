@@ -1,20 +1,24 @@
+from functools import lru_cache
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+
 from django.db.models import F, Q
 from django.http import HttpResponseRedirect, request
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.edit import FormMixin
 from myarchive.models import Archive
 from users.models import UserProfile
 from .forms import PostCreationForm, PostUpdateForm, CreateCommentForm
-from .models import Post, Category, Tag, Comment
-from functools import lru_cache
+from .models import Post, Category, Tag
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class IndexView(ListView):
     template_name = "posts/index.html"
     model = Post
@@ -24,11 +28,13 @@ class IndexView(ListView):
     @lru_cache(maxsize=None)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['slider_posts'] = Post.objects.using('posts').all().filter(slider_post=True).order_by('id')
+        context['slider_posts'] = Post.objects.all().filter(slider_post=True).order_by('id')
         return context
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class MyView(ListView):
     template_name = "posts/index.html"
     model = Post
@@ -36,7 +42,7 @@ class MyView(ListView):
 
     @lru_cache(maxsize=None)
     def get_queryset(self):
-        self.category = UserProfile.objects.using('users').filter(user=self.request.user).values('category_like')
+        self.category = UserProfile.objects.filter(user=self.request.user).values('category_like')
         return super().get_queryset()
 
     @lru_cache(maxsize=None)
@@ -44,11 +50,13 @@ class MyView(ListView):
         context = super(MyView, self).get_context_data(**kwargs)
         for category in self.category:
             category = category['category_like']
-        context['slider_posts'] = Post.objects.using('posts').filter(slider_post=True).filter(category=category).order_by('-pk')
-        context['posts'] = Post.objects.using('posts').filter(category=category).order_by('-pk')
+        context['slider_posts'] = Post.objects.filter(slider_post=True).filter(category=category).order_by('-pk')
+        context['posts'] = Post.objects.filter(category=category).order_by('-pk')
         return context
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class PostDetail(DetailView, FormMixin):
     template_name = 'posts/detail.html'
     model = Post
@@ -57,23 +65,22 @@ class PostDetail(DetailView, FormMixin):
 
     @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
-        self.hit = Post.objects.using('posts').filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
+        self.hit = Post.objects.filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
         return super(PostDetail, self).get(request, *args, **kwargs)
 
     @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(PostDetail, self).get_context_data(**kwargs)
-        context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
-        context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).order_by('pk').first()
-        context['myarchive'] = Archive.objects.filter(post=self.kwargs['pk']).values('id')
+        context['previous'] = Post.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
+        context['next'] = Post.objects.filter(id__gt=self.kwargs['pk']).order_by('pk').first()
         stuff = get_object_or_404(Post, id=self.kwargs['pk'])
-        context['total_likes'] = Post.objects.using('posts').filter(id=stuff.id).values('likes').count()
-        liked = False
-        if stuff.likes.using('posts').filter(id=self.request.user.id).exists():
-            liked = True
+        context['total_likes'] = stuff.total_likes()
+        isliked = False
+        if stuff.likes.filter(id=self.request.user.id).exists():
+            isliked = True
         context['form'] = self.get_form()
-        context['liked'] = liked
-        context['userprofile'] = UserProfile.objects.using('users').filter(user=stuff.user.id)
+        context['liked'] = isliked
+        context['myarchive'] = Archive.objects.filter(post=self.kwargs['pk']).values('id')
         return context
 
     def form_valid(self, form):
@@ -96,6 +103,8 @@ class PostDetail(DetailView, FormMixin):
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class CategoryDetail(ListView):
     model = Post
     template_name = 'categories/category_detail.html'
@@ -114,7 +123,8 @@ class CategoryDetail(ListView):
         context['category'] = self.category
         return context
 
-
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class TagDetail(ListView):
     model = Post
     template_name = 'tags/tag_detail.html'
@@ -124,7 +134,7 @@ class TagDetail(ListView):
     @lru_cache(maxsize=None)
     def get_queryset(self):
         self.tag = get_object_or_404(Tag, slug=self.kwargs['slug'])
-        return Post.objects.using('posts').filter(tag=self.tag).order_by('id')
+        return Post.objects.filter(tag=self.tag).order_by('id')
 
     @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
@@ -135,38 +145,42 @@ class TagDetail(ListView):
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class CreatePostView(CreateView):
     template_name = 'posts/create-post.html'
     form_class = PostCreationForm
     model = Post
 
     def get_success_url(self):
+        print(self.object.pk)
         post = get_object_or_404(Post, id=self.object.pk)
+        print(str(post.image.height) + " " + str(post.image.width))
         if post.image.width <= 450 and post.image.height <= 540:
             post.slider_post = True
-        post.save(using='posts')
+        post.save()
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        self.object = form.save(commit=False)
-        self.object.save()
+        form.save()
 
         tags = self.request.POST.get("tag").split(",")
 
         for tag in tags:
-            current_tag = Tag.objects.using('posts').filter(slug=slugify(tag))
+            current_tag = Tag.objects.filter(slug=slugify(tag))
             if current_tag.count() < 1:
-                create_tag = Tag.objects.using('posts').create(title=tag)
+                create_tag = Tag.objects.create(title=tag)
                 form.instance.tag.add(create_tag)
             else:
-                existed_tag = Tag.objects.using('posts').get(slug=slugify(tag))
-                print(existed_tag)
+                existed_tag = Tag.objects.get(slug=slugify(tag))
                 form.instance.tag.add(existed_tag)
         return super(CreatePostView, self).form_valid(form)
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class UpdatePostView(UpdateView):
     model = Post
     template_name = 'posts/post-update.html'
@@ -182,16 +196,15 @@ class UpdatePostView(UpdateView):
         tags = self.request.POST.get("tag").split(",")
 
         for tag in tags:
-            current_tag = Tag.objects.using('posts').filter(slug=slugify(tag))
+            current_tag = Tag.objects.filter(slug=slugify(tag))
             if current_tag.count() < 1:
-                create_tag = Tag.objects.using('posts').create(title=tag)
+                create_tag = Tag.objects.create(title=tag)
                 form.instance.tag.add(create_tag)
             else:
-                existed_tag = Tag.objects.using('posts').get(slug=slugify(tag))
+                existed_tag = Tag.objects.get(slug=slugify(tag))
                 form.instance.tag.add(existed_tag)
         return super(UpdatePostView, self).form_valid(form)
 
-    @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
@@ -201,6 +214,8 @@ class UpdatePostView(UpdateView):
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class DeletePostView(DeleteView):
     model = Post
     success_url = '/'
@@ -214,7 +229,6 @@ class DeletePostView(DeleteView):
         else:
             return HttpResponseRedirect(self.success_url)
 
-    @lru_cache(maxsize=None)
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.user != request.user:
@@ -222,6 +236,8 @@ class DeletePostView(DeleteView):
         return super(DeletePostView, self).get(request, *args, **kwargs)
 
 
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class SearchView(ListView):
     model = Post
     template_name = 'posts/search.html'
@@ -233,67 +249,51 @@ class SearchView(ListView):
         query = self.request.GET.get("q")
 
         if query:
-            return Post.objects.using('posts').filter(Q(title__icontains=query) |
-                                                      Q(content__icontains=query) |
-                                                      Q(tag__title__icontains=query)
-                                                      ).order_by('id').distinct()
+            return Post.objects.filter(Q(title__icontains=query) |
+                                       Q(content__icontains=query) |
+                                       Q(tag__title__icontains=query)
+                                       ).order_by('id').distinct()
 
-        return Post.objects.using('posts').all().order_by('id')
+        return Post.objects.all().order_by('id')
 
 
 @login_required(login_url='/users/login')
-def CreateArchiveView(request, *args, **kwargs):
-    emailDetail = Post.objects.using('posts').get(id=kwargs['pk'])
-    copyEmailDetail = Archive()
-    for field in emailDetail.__dict__.keys():
-        copyEmailDetail.__dict__[field] = emailDetail.__dict__[field]
-    copyEmailDetail.main_user = User.objects.using('users').get(id=request.user.id)
-    copyEmailDetail.save()
+@vary_on_headers('User-Agent', 'Cookie')
+@cache_page(60 * .167, cache="special_cache")
+def CreateArchiveView(request, **kwargs):
+    archive = Archive()
+    posts = Post.objects.filter(id=kwargs['pk'])
+    for post in posts:
+        archive.content = post.content
+        archive.publishing_date = post.publishing_date
+        archive.title = post.title
+        archive.image = post.image
+        archive.user_id = post.user_id
+        archive.slug = post.slug
+        archive.category_id = post.category_id
+        archive.slider_post = post.slider_post
+        archive.hit = post.hit
+        archive.main_user = request.user
+        archive.post_id = kwargs['pk']
+    archive.save()
     return redirect('/')
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
+@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
+@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class PostDetailArchive(DetailView, FormMixin):
     template_name = 'posts/detail_archive.html'
-    model = Post
+    model = Archive
     context_object_name = 'single'
     form_class = CreateCommentForm
 
     @lru_cache(maxsize=None)
-    def get(self, request, *args, **kwargs):
-        self.hit = Post.objects.using('posts').filter(id=self.kwargs['pk']).update(hit=F('hit') + 1)
-        return super(PostDetailArchive, self).get(request, *args, **kwargs)
-
-    @lru_cache(maxsize=None)
     def get_context_data(self, **kwargs):
         context = super(PostDetailArchive, self).get_context_data(**kwargs)
-        context['previous'] = Post.objects.using('posts').filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
-        context['next'] = Post.objects.using('posts').filter(id__gt=self.kwargs['pk']).order_by('pk').first()
-        stuff = get_object_or_404(Post, id=self.kwargs['pk'])
-        context['total_likes'] = Post.objects.using('posts').filter(id=stuff.id).values('likes').count()
-        liked = False
-        if stuff.likes.using('posts').filter(id=self.request.user.id).exists():
-            liked = True
-        context['form'] = self.get_form()
-        context['liked'] = liked
-        context['userprofile'] = UserProfile.objects.using('users').filter(user=stuff.user.id).values('image')
+        context['previous'] = Archive.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
+        context['next'] = Archive.objects.filter(id__gt=self.kwargs['pk']).order_by('pk').first()
         return context
-
-    def form_valid(self, form):
-        if form.is_valid():
-            form.instance.post = self.object
-            form.save()
-            return super(PostDetailArchive, self).form_valid(form)
-        else:
-            return super(PostDetailArchive, self).form_invalid(form)
-
-    def post(self, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_valid(form)
 
     def get_success_url(self):
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
@@ -304,9 +304,7 @@ def post_like(request, pk):
     post = get_object_or_404(Post, id=pk)
     slug = post.slug
     if post.likes.filter(id=request.user.id).exists():
-        print(post.likes.filter(id=request.user.id))
         post.likes.remove(request.user)
     else:
         post.likes.add(request.user)
-        print(post.likes.filter(id=request.user.id))
     return HttpResponseRedirect(reverse('posts:detail', kwargs={"pk": pk, "slug": slug}))

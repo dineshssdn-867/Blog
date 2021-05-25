@@ -59,7 +59,6 @@ class CreateCommentForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field("name", css_class="form-control"),
             Field("email", css_class="form-control"),
-            Field("image", css_class="single-input"),
             Field("content", css_class="form-control mb-10"),
             Field("captcha"),
         )
@@ -71,6 +70,5 @@ class CreateCommentForm(forms.ModelForm):
         fields = [
             'name',
             'email',
-            'content',
-            'image',
+            'content'
         ]

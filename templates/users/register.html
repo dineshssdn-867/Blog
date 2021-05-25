@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-
-
+{% load cache %}
 {% block content %}
+{% cache 2500 register %}
 
         <!--================Home Banner Area =================-->
         <section class="banner_area position-sticky">
@@ -19,6 +19,7 @@
 				</div>
             </div>
         </section>
+{% endcache %}
         <!--================End Home Banner Area =================-->
         {% include 'messages.html' %}
         <!--================Blog Area =================-->
@@ -38,7 +39,7 @@
                                         <ul>
                                             {% for field in form %}
                                             {% if field.errors %}
-                                            <li>{{ form.label }} : {{ field.errors|striptags }}</li>
+                                            <li>{{ form.label }} {{ field.errors|striptags }}</li>
                                             {% endif %}
                                             {% endfor %}
                                         </ul>
@@ -48,16 +49,16 @@
 
 
                                 <div class="mt-10">
-										<input type="text" name="username" placeholder="User Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'User Name'" required="" class="single-input">
+										<input type="text" name="username" placeholder="User Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'User Name'" required class="single-input">
 									</div>
                                 <div class="mt-10">
-										<input type="text" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'" required="" class="single-input">
+										<input type="text" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'" required class="single-input">
 									</div>
                                 <div class="mt-10">
-										<input type="password" name="password1" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required="" class="single-input">
+										<input type="password" name="password1" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required class="single-input">
 									</div>
                                 <div class="mt-10">
-										<input type="password" name="password2" placeholder="Again Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Again Password'" required="" class="single-input">
+										<input type="password" name="password2" placeholder="Again Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'" required class="single-input">
 									</div>
                                 <input type="submit" class="genric-btn success circle" style="float:right;margin-top:30px" value="Register">
                             </form>

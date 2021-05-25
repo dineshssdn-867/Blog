@@ -13,6 +13,6 @@ urlpatterns = [
     path('post-create', CreatePostView.as_view(), name="create_post"),
     path('search/', SearchView.as_view(), name='search'),
     path('post-add/<int:pk>', CreateArchiveView, name='add-archive'),
-    path('detail_archive/<int:pk>/<slug:slug>', PostDetailArchive.as_view(), name="detail_archive"),
+    path('detail_archive/<int:pk>', PostDetailArchive.as_view(), name="detail_archive"),
     path('detail_like/<int:pk>', post_like, name="like_post")
 ]

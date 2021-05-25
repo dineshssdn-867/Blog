@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
-
+{% load cache %}
 {% block content %}
+{% cache 2500 detail_post_1 %}
 
         <!--================Home Banner Area =================-->
         <section class="banner_area">
@@ -20,7 +21,7 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-
+{% endcache %}
         <!--================Blog Area =================-->
         <section class="blog_area p_120 single-post-area">
             <div class="container">
@@ -60,11 +61,18 @@
                                 <form action="{% url 'posts:like_post' single.pk %}" method="post">
                                     {% csrf_token %}
                                     {% if liked %}
-      							    <button type="submit" value="{{ post.id }}" name="post_id" class="btn btn-danger"><i class="lnr lnr lnr-heart"></i></a></button> {{total_likes}}
+                                    <button type="submit" value="{{ post.id }}" name="post_id" class="btn btn-danger"><i
+                                            class="lnr lnr lnr-heart"></i></button>
+                                    {{total_likes}}
                                     {% else %}
-                                    <button type="submit" value="{{ post.id }}" name="post_id" class="btn btn-secondary"><i class="lnr lnr lnr-heart"></i></a></button> {{total_likes}}
+                                </form>
+                                <form action="{% url 'posts:like_post' single.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" value="{{ post.id }}" name="post_id"
+                                            class="btn btn-secondary"><i class="lnr lnr lnr-heart"></i></button>
+                                    {{total_likes}}
                                     {% endif %}
-                                 </form>
+                                </form>
       							<a class="justify-content-center ml-auto" href="#"><i class="lnr lnr lnr-bubble"></i>{{ single.comment_count }} Comments</a>
       							<div class="news_socail ml-auto">
 									<a href="#"><i class="fa fa-facebook"></i></a>
@@ -76,9 +84,11 @@
       						</div>
                             <br>
                             <div class="">
+                                {% if user.is_authenticated %}
                                 {% if single.user.id == request.user.id or myarchive %}
                                 {% else %}
                                 <a href="{% url 'posts:add-archive' single.pk %}" class="genric-btn info circle">Add to Archive</a>
+                                {% endif %}
                                 {% endif %}
                             </div>
        					</div>
