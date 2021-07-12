@@ -81,6 +81,7 @@ class PostDetail(DetailView, FormMixin):
         context['form'] = self.get_form()
         context['liked'] = isliked
         context['myarchive'] = Archive.objects.filter(post=self.kwargs['pk']).values('id')
+        context['userprofile'] = UserProfile.objects.filter(user=stuff.user)
         return context
 
     def form_valid(self, form):
