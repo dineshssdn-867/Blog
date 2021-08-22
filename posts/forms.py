@@ -60,6 +60,7 @@ class CreateCommentForm(forms.ModelForm):
             Field("name", css_class="form-control"),
             Field("email", css_class="form-control"),
             Field("content", css_class="form-control mb-10"),
+            Field("image", css_class="single-input"),
             Field("captcha"),
         )
 
@@ -70,5 +71,6 @@ class CreateCommentForm(forms.ModelForm):
         fields = [
             'name',
             'email',
-            'content'
+            'content',
+            'image',
         ]

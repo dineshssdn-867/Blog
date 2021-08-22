@@ -1,14 +1,14 @@
 from functools import lru_cache
 from django.contrib.auth.decorators import login_required
-
+from .automate import test,test_special,login
 from django.db.models import F, Q
 from django.http import HttpResponseRedirect, request
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_headers
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.edit import FormMixin
 from myarchive.models import Archive
@@ -17,8 +17,6 @@ from .forms import PostCreationForm, PostUpdateForm, CreateCommentForm
 from .models import Post, Category, Tag
 
 
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class IndexView(ListView):
     template_name = "posts/index.html"
     model = Post
@@ -33,8 +31,6 @@ class IndexView(ListView):
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class MyView(ListView):
     template_name = "posts/index.html"
     model = Post
@@ -55,8 +51,6 @@ class MyView(ListView):
         return context
 
 
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class PostDetail(DetailView, FormMixin):
     template_name = 'posts/detail.html'
     model = Post
@@ -81,6 +75,7 @@ class PostDetail(DetailView, FormMixin):
         context['form'] = self.get_form()
         context['liked'] = isliked
         context['myarchive'] = Archive.objects.filter(post=self.kwargs['pk']).values('id')
+        context['userprofile'] = UserProfile.objects.filter(user=stuff.user)
         return context
 
     def form_valid(self, form):
@@ -103,8 +98,6 @@ class PostDetail(DetailView, FormMixin):
         return reverse('posts:detail', kwargs={"pk": self.object.pk, "slug": self.object.slug})
 
 
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class CategoryDetail(ListView):
     model = Post
     template_name = 'categories/category_detail.html'
@@ -123,8 +116,7 @@ class CategoryDetail(ListView):
         context['category'] = self.category
         return context
 
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
+
 class TagDetail(ListView):
     model = Post
     template_name = 'tags/tag_detail.html'
@@ -145,8 +137,6 @@ class TagDetail(ListView):
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class CreatePostView(CreateView):
     template_name = 'posts/create-post.html'
     form_class = PostCreationForm
@@ -179,8 +169,6 @@ class CreatePostView(CreateView):
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class UpdatePostView(UpdateView):
     model = Post
     template_name = 'posts/post-update.html'
@@ -214,8 +202,6 @@ class UpdatePostView(UpdateView):
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class DeletePostView(DeleteView):
     model = Post
     success_url = '/'
@@ -236,8 +222,6 @@ class DeletePostView(DeleteView):
         return super(DeletePostView, self).get(request, *args, **kwargs)
 
 
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class SearchView(ListView):
     model = Post
     template_name = 'posts/search.html'
@@ -258,8 +242,6 @@ class SearchView(ListView):
 
 
 @login_required(login_url='/users/login')
-@vary_on_headers('User-Agent', 'Cookie')
-@cache_page(60 * .167, cache="special_cache")
 def CreateArchiveView(request, **kwargs):
     archive = Archive()
     posts = Post.objects.filter(id=kwargs['pk'])
@@ -271,6 +253,7 @@ def CreateArchiveView(request, **kwargs):
         archive.user_id = post.user_id
         archive.slug = post.slug
         archive.category_id = post.category_id
+        print(post.slider_post)
         archive.slider_post = post.slider_post
         archive.hit = post.hit
         archive.main_user = request.user
@@ -280,8 +263,6 @@ def CreateArchiveView(request, **kwargs):
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * .167, cache="special_cache"), name='dispatch')
 class PostDetailArchive(DetailView, FormMixin):
     template_name = 'posts/detail_archive.html'
     model = Archive
@@ -293,6 +274,9 @@ class PostDetailArchive(DetailView, FormMixin):
         context = super(PostDetailArchive, self).get_context_data(**kwargs)
         context['previous'] = Archive.objects.filter(id__lt=self.kwargs['pk']).order_by('-pk').first()
         context['next'] = Archive.objects.filter(id__gt=self.kwargs['pk']).order_by('pk').first()
+        stuff = get_object_or_404(Archive, id=self.kwargs['pk'])
+        context['userprofile'] = UserProfile.objects.filter(user=stuff.user)
+        print(context['userprofile'][0].image)
         return context
 
     def get_success_url(self):
@@ -308,3 +292,5 @@ def post_like(request, pk):
     else:
         post.likes.add(request.user)
     return HttpResponseRedirect(reverse('posts:detail', kwargs={"pk": pk, "slug": slug}))
+
+

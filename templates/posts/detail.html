@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
-{% load cache %}
+
 {% block content %}
-{% cache 2500 detail_post_1 %}
+
 
         <!--================Home Banner Area =================-->
         <section class="banner_area">
@@ -21,7 +21,7 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-{% endcache %}
+
         <!--================Blog Area =================-->
         <section class="blog_area p_120 single-post-area">
             <div class="container">

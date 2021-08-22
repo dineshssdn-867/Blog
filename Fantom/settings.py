@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-import django_heroku
+import json
+import pathlib
 import cloudinary
 import cloudinary_storage
+from decouple import config
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'hd$3k3%9m#7^4j!ng@!sudq-kx0l$#yp1g!81p*hz97dl02^=q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['https://d-fantom-blog.herokuapp.com/', '127.0.0.1']
 
@@ -37,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'corsheaders',
     'posts',
     'users',
     'crispy_forms',
@@ -47,9 +52,12 @@ INSTALLED_APPS = [
     'myarchive',
     'cloudinary',
     'cloudinary_storage',
+    'compressor',
+    'cachalot'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -61,9 +69,32 @@ MIDDLEWARE = [
     'django.middleware.http.ConditionalGetMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'accept-encoding',
+    'x-csrftoken',
+    'access-control-allow-origin',
+    'content-disposition',
+)
+CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_METHODS = ('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS')
+
 ROOT_URLCONF = 'Fantom.urls'
+
+EMAIL_HOST = config('smtp_server')
+EMAIL_PORT = config('port')
+EMAIL_HOST_USER = config("sender_email")
+EMAIL_HOST_PASSWORD = config("password")
+MAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 TEMPLATES = [
     {
@@ -122,7 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -133,49 +164,54 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
-
-MEDIA_URL = '/blog/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/myview'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-RECAPTCHA_PUBLIC_KEY = os.environ.get('public_key')
-RECAPTCHA_PRIVATE_KEY = os.environ.get('private_key')
+RECAPTCHA_PUBLIC_KEY = config('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = config('RECAPTCHA_PRIVATE_KEY')
 
 CACHES = {
     'default': {
         'BACKEND': 'django_bmemcached.memcached.BMemcached',
         'TIMEOUT': None,
-        'LOCATION': os.environ.get('location'),
+        'LOCATION': 'mc4.dev.ec2.memcachier.com:11211',
         'OPTIONS': {
-            'username': os.environ.get('username'),
-            'password': os.environ.get('password'),
+            'binary': True,
+            'username': '339DD4',
+            'password': 'A8DF1111A567F675D34CF08F1B27CA80',
+            'behaviors': {
+                'ketama': True,
+            }
         }
     },
     "special_cache": {
-        'BACKEND': 'django_bmemcached.memcached.BMemcached',
-        'LOCATION': os.environ.get('location'),
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': 'memcached-19524.c62.us-east-1-4.ec2.cloud.redislabs.com:19524',
         'OPTIONS': {
-                    'username': os.environ.get('username'),
-                    'password': os.environ.get('password')
+            'binary': True,
+            'username': 'memcached-app207731838',
+            'password': 'BgjfGpmGYjaDlyiemKJj69dbDiRJq1Ji'
+        },
+        'behaviors': {
+            'ketama': True,
         }
     }
 
 }
+
+CACHALOT_ENABLED = True
+CACHALOT_CACHE = 'special_cache'
+CACHALOT_CACHE_RANDOM = True
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'  # storing session using serializer
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # This is for storing sessions in cache
 SESSION_CACHE_ALIAS = 'default'
 
 PWA_APP_NAME = "D's Blog"
-PWA_APP_DESCRIPTION = "A blog is a discussion or informational website published on the World Wide Web consisting of discrete, often informal diary-style text entries. Posts are typically displayed in reverse chronological order, so that the most recent post appears first, at the top of the web page"
+PWA_APP_DESCRIPTION = "A blog is a discussion or informational website published on the World Wide Web consisting of " \
+                      "discrete, often informal diary-style text entries. Posts are typically displayed in reverse " \
+                      "chronological order, so that the most recent post appears first, at the top of the web page "
 PWA_APP_BACKGROUND_COLOR = '#FFFFFF'
 PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = '/'
@@ -193,27 +229,55 @@ PWA_APP_ICONS = [
 PWA_APP_ICONS_APPLE = [
     {
         'src': 'static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png',
-        'sizes': '512x512'}
+        'sizes': '512x512'
+    }
 ]
 PWA_APP_SPLASH_SCREEN = [{'src': '/static/images/571658cd2ec465a08e2dc2cf30258023.png',
-                          'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'}]
+                     'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'}]
 PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
 PWA_APP_DEBUG_MODE = True
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATIC_HOST = config('DJANGO_STATIC_HOST')
+
+STATIC_URL = STATIC_HOST + "/static/"
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder' # Django-Compressor
+]
+
+
+COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
+COMPRESS_ENABLED = True
+# Must enable this to use with Whitenoise
+COMPRESS_OFFLINE = True
+# whitenoise
+
+
+MEDIA_URL = '/blog/'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME':  os.environ.get('username'),
-    'API_KEY':  os.environ.get('api_key'),
-    'API_SECRET':  os.environ.get('api_secret'),
+    'CLOUD_NAME': config('cloud_name'),
+    'API_KEY': config('api_key'),
+    'API_SECRET': config('api_secret'),
 }
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 django_heroku.settings(locals())
-del DATABASES['default']['OPTIONS']['sslmode']
+# del DATABASES['default']['OPTIONS']['sslmode']

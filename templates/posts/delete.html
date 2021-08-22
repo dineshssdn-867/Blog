@@ -1,18 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load cache %}
+
 {% block content %}
-{% cache 2500 delete_post_1 %}
+
         <!--================Home Banner Area =================-->
         <section class="banner_area">
             <div class="banner_inner d-flex align-items-center">
             	<div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
 				<div class="container">
 					<div class="banner_content text-center">
-						<h2>Update Post</h2>
+						<h2>Delete Post</h2>
 						<div class="page_link">
 							<a href="{% url 'posts:index' %}">Home</a>
-
 						</div>
 					</div>
 				</div>
@@ -27,7 +26,6 @@
                     <div class="col-lg-8">
                         <h2 style="text-align:center;color:blue">Are You Sure To Delete This Post?</h2>
                         <div class="blog_left_sidebar">
-                            {% endcache %}
                             <form method="post">
                                 {% csrf_token %}
                                 <a href="{% url 'posts:detail' object.pk object.slug %}" class="genric-btn info circle">No</a>

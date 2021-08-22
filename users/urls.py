@@ -14,5 +14,5 @@ urlpatterns = [
     path('update-profile/<slug:slug>/',UserProfileUpdateView.as_view(),name="update_profile"),
     path('password-change/',authViews.PasswordChangeView.as_view(),name="password_change"),
     path('password-change-done/',authViews.PasswordChangeDoneView.as_view(),name="password_change_done"),
-
+    path('delete/<int:pk>', UserDeleteView.as_view(), name="delete_user"),
 ]

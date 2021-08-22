@@ -46,12 +46,12 @@ class Post(models.Model):
     title = models.CharField(_('title'), max_length=150)
     content = models.TextField(_('content'))
     publishing_date = models.DateTimeField(_('publishing_date'), auto_now_add=True)
-    image = models.ImageField(_('image'), blank=True, null=True, upload_to='uploads/')
+    image = models.ImageField(_('image'), blank=True, default='/uploads/blog_tckati.jpg', upload_to='uploads/')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     slug = models.SlugField(_('slug'), default="slug", editable=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1, related_name="posts")
     tag = models.ManyToManyField(Tag, related_name="posts", blank=True)
-    slider_post = models.BooleanField(_('slider_post'), blank=True, null=True)
+    slider_post = models.BooleanField(_('slider_post'), default=False)
     hit = models.PositiveIntegerField(_('hit'), default=0)
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='blog_post')
 
@@ -81,6 +81,7 @@ class Comment(models.Model):
     email = models.EmailField(_('email'), max_length=100)
     content = models.TextField(_('content'))
     publishing_date = models.DateField(_('publishing_date'), auto_now_add=True)
+    image = models.ImageField(_('image'), blank=True, default='users/person-icon-blue-7560_vad8ci.png', upload_to='comment/')
 
     def __str__(self):
         return self.post.title

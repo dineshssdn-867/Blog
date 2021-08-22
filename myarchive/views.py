@@ -8,8 +8,6 @@ from posts.models import Post
 
 
 @method_decorator(login_required(login_url='/users/login'), name="dispatch")
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class ArchiveView(ListView):
     model = Archive
     template_name = 'Archive/archive.html'

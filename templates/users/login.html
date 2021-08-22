@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% load cache %}
+
 {% block content %}
-{% cache 2500 login %}
+
 
         <!--================Home Banner Area =================-->
         <section class="banner_area">
@@ -21,12 +21,14 @@
             </div>
         </section>
         <!--================End Home Banner Area =================-->
-{% endcache %}
+
+        {% include 'messages.html' %}
         <!--================Blog Area =================-->
         <section class="blog_area p_120">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-8">
+                    <div class="col-lg-5"></div>
+                    <div class="col-lg-7 offset-md-2">
                         {% if not user.is_authenticated %}
                         <h2 style="text-align:center;color:blue">Login</h2>
                         <div class="blog_left_sidebar">

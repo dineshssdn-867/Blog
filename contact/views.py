@@ -4,10 +4,8 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
 from contact.models import Contact
+from django.core.mail import send_mail
 
-
-@method_decorator(vary_on_headers('User-Agent', 'Cookie'), name='dispatch')
-@method_decorator(cache_page(60 * 1, cache="special_cache"), name='dispatch')
 class ContactView(TemplateView):
     template_name = "contact/contact.html"
 
@@ -29,4 +27,5 @@ def submit_query(request):
         Yours sincerely 
         D's Blog Team
     """
+    send_mail(contact.subject, message, 'dinesh.n@ahduni.edu.in', [contact.email])
     return redirect('/')

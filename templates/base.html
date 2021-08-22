@@ -1,8 +1,6 @@
-{% load static %}
+{% load static compress %}
 {% load custom_tags %}
 {% load pwa %}
-{% load cache %}
-{% cache 2500 base_header_1 %}
 <!doctype html>
 <html lang="en">
     <head>
@@ -14,19 +12,23 @@
         <link rel="icon" href="{% static 'img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png' %}" type="image/png">
         <title>D's Blog</title>
         <!-- Bootstrap CSS -->
+         <link href="https://fonts.googleapis.com/css?family=Open + Sans:400, 600, 700|Roboto:300, 400, 500, 700" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.7.0/simple-lightbox.min.css">
+        {% compress css %}
         <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
         <link rel="stylesheet" href="{% static 'vendors/linericon/style.css' %}">
         <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
         <link rel="stylesheet" href="{% static 'vendors/owl-carousel/owl.carousel.min.css' %}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.7.0/simple-lightbox.min.css">
         <link rel="stylesheet" href="{% static 'vendors/nice-select/css/nice-select.css' %}">
         <link rel="stylesheet" href="{% static 'vendors/animate-css/animate.css' %}">
         <link rel="stylesheet" href="{% static 'vendors/jquery-ui/jquery-ui.css' %}">
         <!-- main css -->
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+        {% endcompress %}
     </head>
     <body>
+    {{static}}
         <!--================Header Menu Area =================-->
         <header class="header_area">
             <div class="logo_part">
@@ -44,7 +46,6 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-                        {% endcache %}
 						<!-- Collect the nav links, forms, and other content for toggling -->
 						<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 							<ul class="nav navbar-nav menu_nav">
@@ -72,7 +73,8 @@
 										<li class="nav-item"><a class="nav-link" href="{% url 'users:password_change' %}">Change Password</a></li>
 										<li class="nav-item"><a class="nav-link" href="{% url 'users:myprofile' %}">My Profile</a></li>
                                         <li class="nav-item"><a class="nav-link" href="{% url 'archive:archive' %}">My Archives</a></li>
-										<li class="nav-item"><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{% url 'users:delete_user' pk=user.id %}">Delete Account</a></li>
+										<li class="nav-item"><a class="nav-link" href="{% url 'users:logout'  %}">Logout</a></li>
 									</ul>
 								</li>
                                 {% else %}
@@ -104,7 +106,6 @@
 
 
     <!--================ start footer Area  =================-->
-        {% cache 2500 base_footer_1 %}
         <footer class="footer-area">
             <div class="container">
                 <div class="row">
@@ -159,12 +160,10 @@
         </footer>
 		<!--================ End footer Area  =================-->
 
-
-
-
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        {% compress js %}
         <script src="{% static 'js/popper.js' %}"></script>
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
         <script src="{% static 'js/stellar.js' %}"></script>
@@ -177,9 +176,7 @@
         <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
         <script src="{% static 'js/mail-script.js' %}"></script>
         <script src="{% static 'js/theme.js' %}"></script>
-        <!--<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFrUVK-4UChjW2R6xGveDx3Xt21fdOCbs&callback=initMap"></script>-->
-        <!--<script src="{% static 'js/gmaps.min.js' %}"></script> -->
-        {% endcache %}
+        {% endcompress %}
         <script type="text/javascript">
 	    $(document).ready(function(){
 	    console.log($(window).width())
