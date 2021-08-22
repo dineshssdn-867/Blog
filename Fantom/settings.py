@@ -178,8 +178,8 @@ CACHES = {
         'LOCATION': 'mc4.dev.ec2.memcachier.com:11211',
         'OPTIONS': {
             'binary': True,
-            'username': '339DD4',
-            'password': 'A8DF1111A567F675D34CF08F1B27CA80',
+            'username': config('username'),
+            'password': config('password'),
             'behaviors': {
                 'ketama': True,
             }
@@ -190,8 +190,8 @@ CACHES = {
         'LOCATION': 'memcached-19524.c62.us-east-1-4.ec2.cloud.redislabs.com:19524',
         'OPTIONS': {
             'binary': True,
-            'username': 'memcached-app207731838',
-            'password': 'BgjfGpmGYjaDlyiemKJj69dbDiRJq1Ji'
+            'username': config('username'),
+            'password': config('password'),
         },
         'behaviors': {
             'ketama': True,
@@ -238,9 +238,9 @@ PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
 PWA_APP_DEBUG_MODE = True
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -280,4 +280,4 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 django_heroku.settings(locals())
-# del DATABASES['default']['OPTIONS']['sslmode']
+del DATABASES['default']['OPTIONS']['sslmode']
