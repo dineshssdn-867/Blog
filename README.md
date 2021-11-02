@@ -1,6 +1,6 @@
 <div align="center">
   
-<img src="https://d-fantom-blog.herokuapp.com/static/img/ds.0dff3e51b35b.png">
+<img src="https://d-fantom-blog.herokuapp.com/static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png">
   
 </div>
 
@@ -71,6 +71,23 @@ You can register as a user
   - Add blog, delete blog, update blog.
   - Like or comment to the blog.
   - Archive the blog or save for yourself.
+
+</details>
+<details>
+  <summary>For Yotubers Channel Video's</summary>
+
+  - Get to know the info of emotions of channel videos in the time interval.
+  - Get to know the info of intents of channel videos in the time interval.
+  - Visualize results of emotions
+  - Get to know how this works
+</details>
+
+<details>
+  <summary>For Yotubers Video</summary>
+  - Get to know the info of emotions of individual videos.
+  - Get to know the info of intents of individual videos.
+  - Visualize results of emotions
+  - Get to know how this works
 </details>
 
 ## Tech Stack👨‍💻
