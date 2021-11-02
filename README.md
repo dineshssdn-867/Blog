@@ -68,27 +68,12 @@ Make migrations and start the server
 You can register as a user
 <details>
   <summary>For User</summary>
+  
   - Add blog, delete blog, update blog.
   - Like or comment to the blog.
   - Archive the blog or save for yourself.
-
-</details>
-<details>
-  <summary>For Yotubers Channel Video's</summary>
-
-  - Get to know the info of emotions of channel videos in the time interval.
-  - Get to know the info of intents of channel videos in the time interval.
-  - Visualize results of emotions
-  - Get to know how this works
 </details>
 
-<details>
-  <summary>For Yotubers Video</summary>
-  - Get to know the info of emotions of individual videos.
-  - Get to know the info of intents of individual videos.
-  - Visualize results of emotions
-  - Get to know how this works
-</details>
 
 ## Tech Stack👨‍💻
 
