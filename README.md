@@ -68,9 +68,9 @@ Make migrations and start the server
 You can register as a user
 <details>
   <summary>For User</summary>
-  - Add blog, delete blog, update blog
-  - Like or comment to the blog
-  - Archive the blog or save for yourself
+  - Add blog, delete blog, update blog.
+  - Like or comment to the blog.
+  - Archive the blog or save for yourself.
 </details>
 
 ## Tech Stack👨‍💻
