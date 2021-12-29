@@ -16,7 +16,8 @@ Personal Project - D's Blog
 
 ## Demo💻
 
-[Demo](https://d-fantom-blog.herokuapp.com/)
+<!-- [Demo](https://d-fantom-blog.herokuapp.com/) -->
+Cuurently under maintenance
 
 ## Environment Variables⚙
 
