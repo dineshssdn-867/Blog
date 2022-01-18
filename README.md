@@ -10,7 +10,7 @@
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-# D's Blog ✨
+# Infinity ✨
 
 Personal Project - Infinity
 
