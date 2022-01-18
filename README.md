@@ -1,6 +1,6 @@
 <div align="center">
   
-<img src="https://d-fantom-blog.herokuapp.com/static/img/ds-d-s-purple-letter-logo-design-with-creative-liquid-effect-flowing-vector-illustration-MFR65B.png">
+<img src="https://d-fantom-blog.herokuapp.com/static/assets/img/istockphoto-1274384094-170667a-removebg-preview.png">
   
 </div>
 
@@ -12,7 +12,7 @@
 
 # D's Blog ✨
 
-Personal Project - D's Blog
+Personal Project - Infinity
 
 ## Demo💻
 
