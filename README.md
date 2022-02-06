@@ -16,8 +16,7 @@ Personal Project - Infinity
 
 ## Demo💻
 
-<!-- [Demo](https://d-fantom-blog.herokuapp.com/) -->
-Cuurently under maintenance
+[Demo](https://d-fantom-blog.herokuapp.com/) 
 
 ## Environment Variables⚙
 
