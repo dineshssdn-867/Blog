@@ -9,7 +9,7 @@ chardet==4.0.0
 cloudinary==1.25.0
 cryptography==3.4.7
 dj-database-url==0.5.0
-Django==3.2.14
+Django==3.2.15
 django-appconf==1.0.4
 django-bmemcached==0.2.4
 django-cachalot==2.4.2
